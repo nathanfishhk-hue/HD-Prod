@@ -101,7 +101,16 @@ function loadExerciseLibrary(): ExerciseDefinition[] {
     const saved = localStorage.getItem(STORAGE_KEYS.EXERCISE_LIBRARY);
     if (saved) {
       const parsed = JSON.parse(saved) as ExerciseDefinition[];
-      if (Array.isArray(parsed) && parsed.length) return parsed;
+      if (Array.isArray(parsed) && parsed.length) {
+        const existingIds = new Set(parsed.map(e => e.id));
+        const missing = DEFAULT_EXERCISE_LIBRARY.filter(e => !existingIds.has(e.id));
+        if (missing.length) {
+          const merged = [...parsed, ...missing];
+          try { localStorage.setItem(STORAGE_KEYS.EXERCISE_LIBRARY, JSON.stringify(merged)); } catch {}
+          return merged;
+        }
+        return parsed;
+      }
     }
   } catch {}
   return DEFAULT_EXERCISE_LIBRARY;
