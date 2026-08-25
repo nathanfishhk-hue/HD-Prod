@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Lock, Unlock, Volume2, VolumeX, ShieldAlert, Sparkles, Download } from 'lucide-react';
+import { Lock, Unlock, Volume2, VolumeX, Download } from 'lucide-react';
 import { WeightUnit } from '../types/hit';
 
 interface HeaderProps {
@@ -11,6 +11,9 @@ interface HeaderProps {
   toggleSound: () => void;
   onOpenProfile: () => void;
   onOpenRules: () => void;
+  profiles: Record<string, { id: string; profile: { name: string; weightKg: number; bfPercent: number } }>;
+  activeProfileId: string;
+  switchProfile: (id: string) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -21,22 +24,22 @@ export const Header: React.FC<HeaderProps> = ({
   soundEnabled,
   toggleSound,
   onOpenProfile,
-  onOpenRules
+  onOpenRules,
+  profiles,
+  activeProfileId,
+  switchProfile
 }) => {
   const [deferredInstallPrompt, setDeferredInstallPrompt] = useState<unknown>(null);
   const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
-    // Check if running as PWA standalone
     if (window.matchMedia('(display-mode: standalone)').matches) {
       setIsStandalone(true);
     }
-
     const handleBeforeInstall = (e: Event) => {
       e.preventDefault();
       setDeferredInstallPrompt(e);
     };
-
     window.addEventListener('beforeinstallprompt', handleBeforeInstall);
     return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
   }, []);
@@ -54,6 +57,8 @@ export const Header: React.FC<HeaderProps> = ({
       alert('To install as PWA: Tap your browser menu (3 dots or share icon) and select "Add to Home Screen".');
     }
   };
+
+  const active = profiles[activeProfileId];
 
   return (
     <header className="sticky top-0 z-40 bg-zinc-950/95 backdrop-blur-md border-b border-zinc-800 px-3 py-2.5 sm:px-6">
@@ -77,9 +82,25 @@ export const Header: React.FC<HeaderProps> = ({
             </p>
           </div>
         </div>
-
         {/* Action controls */}
         <div className="flex items-center gap-1.5 sm:gap-2">
+          {/* Profile Switcher - NEW */}
+          <div className="flex items-center bg-zinc-900 border border-zinc-800 rounded overflow-hidden">
+            {Object.values(profiles).map(p => (
+              <button
+                key={p.id}
+                onClick={() => switchProfile(p.id)}
+                className={`px-2.5 py-1 text-xs font-mono-code font-bold transition ${
+                  activeProfileId === p.id
+                    ? 'bg-red-600 text-white'
+                    : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800'
+                }`}
+              >
+                {p.profile.name.toUpperCase()}
+              </button>
+            ))}
+          </div>
+
           {/* KG/LBS Toggle */}
           <button
             onClick={() => setUnitPreference(unitPreference === 'kg' ? 'lbs' : 'kg')}
@@ -91,58 +112,47 @@ export const Header: React.FC<HeaderProps> = ({
             <span className={unitPreference === 'lbs' ? 'text-red-500 font-black' : 'text-zinc-500'}>LBS</span>
           </button>
 
-          {/* Edit Lock / Unlock button */}
+          {/* Edit Lock */}
           <button
             onClick={toggleEditModeLock}
-            className={`flex items-center gap-1 text-xs font-mono-code font-semibold px-2 py-1 rounded border transition ${
+            className={`hidden sm:flex items-center gap-1 text-xs font-mono-code font-semibold px-2 py-1 rounded border transition ${
               editModeLocked
                 ? 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-zinc-200'
                 : 'bg-amber-950/80 border-amber-600/80 text-amber-400 font-bold shadow-[0_0_10px_rgba(245,158,11,0.2)]'
             }`}
-            title={editModeLocked ? "Program Edits Locked (Click to unlock)" : "Edit Mode Unlocked (Click to lock)"}
+            title={editModeLocked ? "Program Edits Locked" : "Edit Mode Unlocked"}
           >
-            {editModeLocked ? (
-              <>
-                <Lock className="w-3.5 h-3.5 text-zinc-400" />
-                <span className="hidden md:inline">LOCKED</span>
-              </>
-            ) : (
-              <>
-                <Unlock className="w-3.5 h-3.5 text-amber-400" />
-                <span className="hidden md:inline">EDITING</span>
-              </>
-            )}
+            {editModeLocked ? <><Lock className="w-3.5 h-3.5" /><span>LOCKED</span></> : <><Unlock className="w-3.5 h-3.5" /><span>EDITING</span></>}
           </button>
 
           {/* Audio toggle */}
           <button
             onClick={toggleSound}
             className="p-1.5 bg-zinc-900 border border-zinc-800 rounded text-zinc-400 hover:text-zinc-100 transition"
-            title={soundEnabled ? "Mute Timer Audio" : "Enable Timer Audio"}
+            title={soundEnabled ? "Mute" : "Enable sound"}
           >
             {soundEnabled ? <Volume2 className="w-4 h-4 text-emerald-400" /> : <VolumeX className="w-4 h-4 text-zinc-500" />}
           </button>
 
-          {/* PWA Install Button */}
+          {/* PWA Install */}
           {!isStandalone && (
             <button
               onClick={handleInstallPWA}
               className="hidden sm:flex items-center gap-1.5 px-2 py-1 bg-red-950/80 border border-red-700/80 hover:bg-red-900 rounded text-xs font-mono-code font-bold text-red-200 transition"
-              title="Install PWA to Home Screen"
             >
-              <Download className="w-3.5 h-3.5 text-red-400" />
+              <Download className="w-3.5 h-3.5" />
               <span>INSTALL</span>
             </button>
           )}
 
-          {/* Profile Badge */}
+          {/* Profile Badge - shows active */}
           <button
             onClick={onOpenProfile}
             className="flex items-center gap-1.5 bg-zinc-900 border border-zinc-800 hover:border-red-900/80 px-2 py-1 rounded text-xs font-mono-code font-medium text-zinc-300 transition"
           >
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="hidden sm:inline">100kg • 25% BF</span>
-            <span className="sm:hidden">PROFILE</span>
+            <div className={`w-2 h-2 rounded-full ${activeProfileId === 'nate' ? 'bg-red-500' : 'bg-sky-500'} animate-pulse`} />
+            <span className="hidden sm:inline">{active?.profile.weightKg}kg • {active?.profile.bfPercent}% BF</span>
+            <span className="sm:hidden">{active?.profile.name.toUpperCase()}</span>
           </button>
         </div>
       </div>

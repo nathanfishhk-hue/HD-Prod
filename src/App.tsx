@@ -14,7 +14,6 @@ export function App() {
   const [activeTab, setActiveTab] = useState<TabType>('runner');
   const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
 
-  // Check if first visit for onboarding modal
   useEffect(() => {
     const hasSeenOnboarding = localStorage.getItem('hit_seen_onboarding_v2');
     if (!hasSeenOnboarding) {
@@ -25,7 +24,6 @@ export function App() {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col font-sans selection:bg-red-600 selection:text-white">
-      {/* Top Heavy Duty Header */}
       <Header
         unitPreference={storage.unitPreference}
         setUnitPreference={storage.setUnitPreference}
@@ -35,9 +33,10 @@ export function App() {
         toggleSound={storage.toggleSound}
         onOpenProfile={() => setActiveTab('profile')}
         onOpenRules={() => setShowOnboarding(true)}
+        profiles={storage.profiles}
+        activeProfileId={storage.activeProfileId}
+        switchProfile={storage.switchProfile}
       />
-
-      {/* Main View Container */}
       <main className="flex-1">
         {activeTab === 'runner' && <WorkoutRunner storage={storage} />}
         {activeTab === 'builder' && <ProgramBuilder storage={storage} />}
@@ -45,11 +44,7 @@ export function App() {
         {activeTab === 'history' && <HistoryAndAnalytics storage={storage} />}
         {activeTab === 'profile' && <ProfileAndRules storage={storage} />}
       </main>
-
-      {/* Bottom Heavy Duty Navigation */}
       <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
-
-      {/* Onboarding Modal */}
       {showOnboarding && (
         <OnboardingModal
           userProfile={storage.userProfile}
@@ -59,5 +54,4 @@ export function App() {
     </div>
   );
 }
-
 export default App;

@@ -15,17 +15,69 @@ import {
 } from '../data/defaultProgram';
 
 const STORAGE_KEYS = {
-  USER_PROFILE: 'hit_user_profile_v2',
+  PROFILES: 'hit_profiles_v3',
+  ACTIVE_ID: 'hit_active_profile_id_v3',
   WEEK_PHASES: 'hit_week_phases_v2',
   DAY_CONFIGS: 'hit_day_configs_v2',
-  WORKOUT_LOGS: 'hit_workout_logs_v2',
-  BODY_STATS: 'hit_body_stats_v2',
   UNIT_PREF: 'hit_unit_pref_v2',
   EDIT_LOCKED: 'hit_edit_locked_v2',
-  SOUND_ENABLED: 'hit_sound_enabled_v2'
+  SOUND_ENABLED: 'hit_sound_enabled_v2',
+  // legacy single-profile keys for migration
+  LEGACY_PROFILE: 'hit_user_profile_v2',
+  LEGACY_LOGS: 'hit_workout_logs_v2',
+  LEGACY_STATS: 'hit_body_stats_v2',
 };
 
-const DEFAULT_BODY_STATS: BodyStatEntry[] = [
+export interface ProfileData {
+  id: string;
+  profile: UserProfile;
+  workoutLogs: LoggedWorkout[];
+  bodyStats: BodyStatEntry[];
+}
+
+const DEFAULT_ROB_PROFILE: UserProfile = {
+  name: "Rob",
+  age: 32,
+  heightCm: 183,
+  weightKg: 92.0,
+  bfPercent: 20.0,
+  experienceLevel: "Intermediate",
+  sessionsPerWeek: 3,
+  ankleMobilityLimited: false,
+  dislikesLegsLovesUpper: false,
+  goal: "6-Month Heavy Duty Recomp",
+  targetCalorieDeficit: 2000,
+  targetProteinGrams: 185,
+  targetCreatineGrams: 5,
+  targetSleepHours: 7
+};
+
+const DEFAULT_BODY_STATS_ROB: BodyStatEntry[] = [
+  {
+    id: 'rob-stat-1',
+    date: new Date(Date.now() - 14 * 86400000).toISOString().split('T')[0],
+    weightKg: 93.0,
+    waistCm: 92.0,
+    bfPercent: 20.5,
+    proteinIntakeG: 180,
+    creatineTaken: true,
+    sleepHours: 7.0,
+    notes: 'Rob baseline - start of HIT block.'
+  },
+  {
+    id: 'rob-stat-2',
+    date: new Date().toISOString().split('T')[0],
+    weightKg: 92.0,
+    waistCm: 91.0,
+    bfPercent: 20.0,
+    proteinIntakeG: 185,
+    creatineTaken: true,
+    sleepHours: 7.0,
+    notes: 'Current.'
+  }
+];
+
+const DEFAULT_BODY_STATS_NATE: BodyStatEntry[] = [
   {
     id: 'stat-1',
     date: new Date(Date.now() - 14 * 86400000).toISOString().split('T')[0],
@@ -61,11 +113,66 @@ const DEFAULT_BODY_STATS: BodyStatEntry[] = [
   }
 ];
 
+function loadProfiles(): { profiles: Record<string, ProfileData>; activeId: string } {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEYS.PROFILES);
+    const activeSaved = localStorage.getItem(STORAGE_KEYS.ACTIVE_ID);
+    if (saved) {
+      const parsed = JSON.parse(saved) as Record<string, ProfileData>;
+      // ensure both exist
+      if (!parsed['nate']) {
+        parsed['nate'] = {
+          id: 'nate',
+          profile: { ...DEFAULT_USER_PROFILE, name: 'Nate' },
+          workoutLogs: [],
+          bodyStats: DEFAULT_BODY_STATS_NATE
+        };
+      }
+      if (!parsed['rob']) {
+        parsed['rob'] = {
+          id: 'rob',
+          profile: DEFAULT_ROB_PROFILE,
+          workoutLogs: [],
+          bodyStats: DEFAULT_BODY_STATS_ROB
+        };
+      }
+      // migrate display names
+      parsed['nate'].profile.name = 'Nate';
+      parsed['rob'].profile.name = 'Rob';
+      const active = activeSaved && parsed[activeSaved] ? activeSaved : 'nate';
+      return { profiles: parsed, activeId: active };
+    }
+  } catch {}
+
+  // migration from legacy single profile
+  let legacyProfile: UserProfile | null = null;
+  let legacyLogs: LoggedWorkout[] = [];
+  let legacyStats: BodyStatEntry[] = [];
+  try {
+    const p = localStorage.getItem(STORAGE_KEYS.LEGACY_PROFILE);
+    if (p) legacyProfile = JSON.parse(p);
+    const l = localStorage.getItem(STORAGE_KEYS.LEGACY_LOGS);
+    if (l) legacyLogs = JSON.parse(l);
+    const s = localStorage.getItem(STORAGE_KEYS.LEGACY_STATS);
+    if (s) legacyStats = JSON.parse(s);
+  } catch {}
+
+  const nateProfile = legacyProfile ? { ...legacyProfile, name: 'Nate' } : { ...DEFAULT_USER_PROFILE, name: 'Nate' };
+  const nateStats = legacyStats.length ? legacyStats : DEFAULT_BODY_STATS_NATE;
+  const nateLogs = legacyLogs;
+
+  const profiles: Record<string, ProfileData> = {
+    nate: { id: 'nate', profile: nateProfile, workoutLogs: nateLogs, bodyStats: nateStats },
+    rob: { id: 'rob', profile: DEFAULT_ROB_PROFILE, workoutLogs: [], bodyStats: DEFAULT_BODY_STATS_ROB }
+  };
+  return { profiles, activeId: 'nate' };
+}
+
 export function useHitStorage() {
-  const [userProfile, setUserProfile] = useState<UserProfile>(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.USER_PROFILE);
-    return saved ? JSON.parse(saved) : DEFAULT_USER_PROFILE;
-  });
+  const [{ profiles: initialProfiles, activeId: initialActive }] = useState(() => loadProfiles());
+
+  const [profiles, setProfiles] = useState<Record<string, ProfileData>>(initialProfiles);
+  const [activeProfileId, setActiveProfileId] = useState<string>(initialActive);
 
   const [weeks, setWeeks] = useState<WeekPhaseConfig[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.WEEK_PHASES);
@@ -75,16 +182,6 @@ export function useHitStorage() {
   const [days, setDays] = useState<WorkoutDayConfig[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.DAY_CONFIGS);
     return saved ? JSON.parse(saved) : DEFAULT_DAY_CONFIGS;
-  });
-
-  const [workoutLogs, setWorkoutLogs] = useState<LoggedWorkout[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.WORKOUT_LOGS);
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  const [bodyStats, setBodyStats] = useState<BodyStatEntry[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.BODY_STATS);
-    return saved ? JSON.parse(saved) : DEFAULT_BODY_STATS;
   });
 
   const [unitPreference, setUnitPreferenceState] = useState<WeightUnit>(() => {
@@ -102,10 +199,19 @@ export function useHitStorage() {
     return saved !== null ? JSON.parse(saved) : true;
   });
 
-  // Save changes to local storage
+  const activeData = profiles[activeProfileId] || profiles['nate'];
+  const userProfile = activeData.profile;
+  const workoutLogs = activeData.workoutLogs;
+  const bodyStats = activeData.bodyStats;
+
+  // Persist profiles + active id
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(userProfile));
-  }, [userProfile]);
+    localStorage.setItem(STORAGE_KEYS.PROFILES, JSON.stringify(profiles));
+  }, [profiles]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.ACTIVE_ID, activeProfileId);
+  }, [activeProfileId]);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.WEEK_PHASES, JSON.stringify(weeks));
@@ -114,14 +220,6 @@ export function useHitStorage() {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.DAY_CONFIGS, JSON.stringify(days));
   }, [days]);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.WORKOUT_LOGS, JSON.stringify(workoutLogs));
-  }, [workoutLogs]);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.BODY_STATS, JSON.stringify(bodyStats));
-  }, [bodyStats]);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.UNIT_PREF, unitPreference);
@@ -135,10 +233,30 @@ export function useHitStorage() {
     localStorage.setItem(STORAGE_KEYS.SOUND_ENABLED, JSON.stringify(soundEnabled));
   }, [soundEnabled]);
 
-  // Actions
+  // Profile actions
+  const switchProfile = useCallback((id: string) => {
+    if (profiles[id]) setActiveProfileId(id);
+  }, [profiles]);
+
   const updateUserProfile = useCallback((profileUpdates: Partial<UserProfile>) => {
-    setUserProfile(prev => ({ ...prev, ...profileUpdates }));
-  }, []);
+    setProfiles(prev => ({
+      ...prev,
+      [activeProfileId]: {
+        ...prev[activeProfileId],
+        profile: { ...prev[activeProfileId].profile, ...profileUpdates, name: prev[activeProfileId].profile.name }
+      }
+    }));
+  }, [activeProfileId]);
+
+  const renameActiveProfile = useCallback((newName: string) => {
+    setProfiles(prev => ({
+      ...prev,
+      [activeProfileId]: {
+        ...prev[activeProfileId],
+        profile: { ...prev[activeProfileId].profile, name: newName }
+      }
+    }));
+  }, [activeProfileId]);
 
   const setUnitPreference = useCallback((unit: WeightUnit) => {
     setUnitPreferenceState(unit);
@@ -217,7 +335,6 @@ export function useHitStorage() {
 
       const added: WeekPhaseConfig[] = [];
       for (let w = currentCount + 1; w <= newTotalWeeks; w++) {
-        // Cycle phase logic: Foundation -> Overload -> Peak
         let phase: WeekPhaseConfig['phase'] = 'Foundation';
         if (w % 6 === 3 || w % 6 === 4) phase = 'Overload';
         if (w % 6 === 5 || w % 6 === 0) phase = 'Peak';
@@ -252,24 +369,33 @@ export function useHitStorage() {
   }, []);
 
   const logWorkoutSession = useCallback((newLog: LoggedWorkout) => {
-    setWorkoutLogs(prev => {
-      const existsIndex = prev.findIndex(l => l.weekNumber === newLog.weekNumber && l.dayKey === newLog.dayKey);
+    setProfiles(prev => {
+      const cur = prev[activeProfileId];
+      const existsIndex = cur.workoutLogs.findIndex(l => l.weekNumber === newLog.weekNumber && l.dayKey === newLog.dayKey);
+      let newLogs: LoggedWorkout[];
       if (existsIndex >= 0) {
-        const updated = [...prev];
-        updated[existsIndex] = newLog;
-        return updated;
+        newLogs = [...cur.workoutLogs];
+        newLogs[existsIndex] = newLog;
+      } else {
+        newLogs = [newLog, ...cur.workoutLogs];
       }
-      return [newLog, ...prev];
+      return { ...prev, [activeProfileId]: { ...cur, workoutLogs: newLogs } };
     });
-  }, []);
+  }, [activeProfileId]);
 
   const addBodyStatEntry = useCallback((entry: BodyStatEntry) => {
-    setBodyStats(prev => [entry, ...prev.filter(s => s.date !== entry.date)]);
-  }, []);
+    setProfiles(prev => {
+      const cur = prev[activeProfileId];
+      return { ...prev, [activeProfileId]: { ...cur, bodyStats: [entry, ...cur.bodyStats.filter(s => s.date !== entry.date)] } };
+    });
+  }, [activeProfileId]);
 
   const removeBodyStatEntry = useCallback((id: string) => {
-    setBodyStats(prev => prev.filter(s => s.id !== id));
-  }, []);
+    setProfiles(prev => {
+      const cur = prev[activeProfileId];
+      return { ...prev, [activeProfileId]: { ...cur, bodyStats: cur.bodyStats.filter(s => s.id !== id) } };
+    });
+  }, [activeProfileId]);
 
   const getExerciseHistory = useCallback((exerciseName: string) => {
     const historyList: { date: string; weekNumber: number; weightKg: number; reps: number; rpe: number; e1rm: number }[] = [];
@@ -296,36 +422,39 @@ export function useHitStorage() {
   }, [workoutLogs]);
 
   const resetToDefaults = useCallback(() => {
-    if (confirm('Are you sure you want to reset all program configurations, stats, and logs back to default Temple Gym HIT settings?')) {
-      setUserProfile(DEFAULT_USER_PROFILE);
+    if (confirm('Reset ALL profiles, program, logs? This wipes Nate & Rob.')) {
+      const fresh: Record<string, ProfileData> = {
+        nate: { id: 'nate', profile: { ...DEFAULT_USER_PROFILE, name: 'Nate' }, workoutLogs: [], bodyStats: DEFAULT_BODY_STATS_NATE },
+        rob: { id: 'rob', profile: DEFAULT_ROB_PROFILE, workoutLogs: [], bodyStats: DEFAULT_BODY_STATS_ROB }
+      };
+      setProfiles(fresh);
+      setActiveProfileId('nate');
       setWeeks(DEFAULT_WEEK_PHASES);
       setDays(DEFAULT_DAY_CONFIGS);
-      setWorkoutLogs([]);
-      setBodyStats(DEFAULT_BODY_STATS);
       setUnitPreferenceState('kg');
       setEditModeLockedState(true);
       setSoundEnabledState(true);
-      localStorage.clear();
+      localStorage.removeItem(STORAGE_KEYS.WEEK_PHASES);
+      localStorage.removeItem(STORAGE_KEYS.DAY_CONFIGS);
     }
   }, []);
 
   const exportDataJSON = useCallback(() => {
     const exportObj = {
-      userProfile,
+      profiles,
+      activeProfileId,
       weeks,
       days,
-      workoutLogs,
-      bodyStats,
       exportedAt: new Date().toISOString()
     };
     const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `Heavy_Duty_HIT_Backup_${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `Heavy_Duty_HIT_Backup_${activeData.profile.name}_${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
-  }, [userProfile, weeks, days, workoutLogs, bodyStats]);
+  }, [profiles, activeProfileId, weeks, days, activeData.profile.name]);
 
   const exportDataCSV = useCallback(() => {
     let csvContent = 'Date,Week,Day,Exercise,SetType,Weight_kg,Reps,RPE,FailureReached,RestPauseReps,DropSetWeight_kg,DropSetReps\n';
@@ -342,38 +471,58 @@ export function useHitStorage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `Heavy_Duty_Workout_History_${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `Heavy_Duty_Workout_History_${activeData.profile.name}_${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-  }, [workoutLogs]);
+  }, [workoutLogs, activeData.profile.name]);
 
   const importDataJSON = useCallback((jsonStr: string) => {
     try {
       const data = JSON.parse(jsonStr);
-      if (data.userProfile) setUserProfile(data.userProfile);
+      if (data.profiles && data.activeProfileId) {
+        setProfiles(data.profiles);
+        setActiveProfileId(data.activeProfileId);
+      } else if (data.userProfile) {
+        // legacy single profile import -> merge into active
+        setProfiles(prev => ({
+          ...prev,
+          [activeProfileId]: {
+            ...prev[activeProfileId],
+            profile: data.userProfile,
+            workoutLogs: data.workoutLogs || prev[activeProfileId].workoutLogs,
+            bodyStats: data.bodyStats || prev[activeProfileId].bodyStats
+          }
+        }));
+      }
       if (data.weeks) setWeeks(data.weeks);
       if (data.days) setDays(data.days);
-      if (data.workoutLogs) setWorkoutLogs(data.workoutLogs);
-      if (data.bodyStats) setBodyStats(data.bodyStats);
       alert('Data imported successfully!');
     } catch {
-      alert('Invalid backup file. Please upload a valid Heavy Duty JSON file.');
+      alert('Invalid backup file.');
     }
-  }, []);
+  }, [activeProfileId]);
 
   return {
+    // multi-profile
+    profiles,
+    activeProfileId,
+    activeData,
+    switchProfile,
+    renameActiveProfile,
+    // derived active
     userProfile,
-    updateUserProfile,
-    weeks,
-    days,
     workoutLogs,
     bodyStats,
+    // global
+    weeks,
+    days,
     unitPreference,
     setUnitPreference,
     editModeLocked,
     toggleEditModeLock,
     soundEnabled,
     toggleSound,
+    updateUserProfile,
     updateExercise,
     swapExercise,
     addExerciseToDay,
