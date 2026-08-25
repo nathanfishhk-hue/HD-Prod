@@ -263,21 +263,21 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
   },
   {
     id: 'ex-nautilus-fly',
-    name: 'Nautilus Fly Machine',
+    name: 'Cable Crossover',
     muscleGroup: 'Chest',
-    targetRepsMin: 8,
-    targetRepsMax: 12,
+    targetRepsMin: 10,
+    targetRepsMax: 15,
     defaultWarmups: 1,
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 120,
     isAnkleSafe: true,
-    notes: 'Jones original cam-based fly. Constant resistance. Mentzer used as pre-exhaust superset to presses.',
-    alternatives: ['Pec Deck Fly', 'Dumbbell Fly']
+    notes: 'Small-gym fly replacement - cables from high pulleys, chest isolation, 4s negative, pre-exhaust before presses.',
+    alternatives: ['Pec Deck Fly', 'Dumbbell Fly (Flat)']
   },
   {
     id: 'ex-nautilus-press',
-    name: 'Nautilus Chest Press',
+    name: 'Machine Chest Press',
     muscleGroup: 'Chest',
     targetRepsMin: 6,
     targetRepsMax: 10,
@@ -286,8 +286,8 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     tempo: '3/1/4',
     restSeconds: 180,
     isAnkleSafe: true,
-    notes: 'Jones Nautilus press - Mentzer Heavy Duty compound after flyes. Failure + forced reps.',
-    alternatives: ['Incline Barbell Press 30deg', 'Hammer Strength Press']
+    notes: 'Common plate-loaded or stack press - every small gym has one. Mentzer compound after flyes, HIT to failure.',
+    alternatives: ['Incline Barbell Press 30deg', 'Flat Dumbbell Press']
   },
   {
     id: 'ex-flat-db-press',
@@ -334,16 +334,16 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
   // BACK LEGACY
   {
     id: 'ex-nautilus-pullover-machine',
-    name: 'Nautilus Pullover Machine',
+    name: 'Wide-Grip Lat Pulldown',
     muscleGroup: 'Lats/Back',
-    targetRepsMin: 8,
-    targetRepsMax: 12,
+    targetRepsMin: 6,
+    targetRepsMax: 10,
     defaultWarmups: 1,
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 150,
     isAnkleSafe: true,
-    notes: 'Jones invention - Yates & Mentzer lats without biceps. Pre-exhaust before rows/pulldowns. Full stretch behind head.',
+    notes: 'Every small gym has this - lat pulldown replaces Nautilus pullover. Wide overhand grip, stretch at top, pull to chest.',
     alternatives: ['Dumbbell Pullover', 'Straight Arm Pulldown']
   },
   {
@@ -357,8 +357,8 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     tempo: '3/1/4',
     restSeconds: 120,
     isAnkleSafe: true,
-    notes: 'Mentzer alternative to Nautilus pullover. Arms straight, drive elbows to hips, lat isolation.',
-    alternatives: ['Nautilus Pullover Machine', 'Dumbbell Pullover']
+    notes: 'Mentzer alternative - arms straight, drive elbows to hips, lat isolation. Common cable stack.',
+    alternatives: ['Wide-Grip Lat Pulldown', 'Dumbbell Pullover']
   },
   {
     id: 'ex-close-grip-pulldown',
@@ -668,20 +668,20 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     restSeconds: 120,
     isAnkleSafe: true,
     notes: 'Mentzer & Yates - EZ-bar to forehead, elbows fixed. Keep as press, not bench. Spotter needed.',
-    alternatives: ['Rope Tricep Pushdown', 'Nautilus Tricep Extension']
+    alternatives: ['Rope Tricep Pushdown', 'Overhead Cable Tricep Extension']
   },
   {
     id: 'ex-nautilus-tricep-ext',
-    name: 'Nautilus Tricep Extension',
+    name: 'Overhead Cable Tricep Extension',
     muscleGroup: 'Triceps',
-    targetRepsMin: 6,
-    targetRepsMax: 10,
+    targetRepsMin: 8,
+    targetRepsMax: 12,
     defaultWarmups: 1,
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 120,
     isAnkleSafe: true,
-    notes: 'Jones cam tricep machine - Mentzer heavy duty tricep work. Dips alternative superset.',
+    notes: 'Small-gym cable overhead - rope over head, elbows forward, stretch long head. Common cable stack.',
     alternatives: ['Rope Tricep Pushdown', 'Lying Tricep Extension']
   },
   {
@@ -696,7 +696,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     restSeconds: 120,
     isAnkleSafe: true,
     notes: 'Yates pushdown - straight/EZ bar, elbows pinned. 2 warmups x12-15 then 1x8-10 beyond failure.',
-    alternatives: ['Rope Tricep Pushdown', 'Nautilus Tricep Extension']
+    alternatives: ['Rope Tricep Pushdown', 'Overhead Cable Tricep Extension']
   },
   {
     id: 'ex-dips-tricep',
@@ -710,7 +710,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     restSeconds: 150,
     isAnkleSafe: true,
     notes: 'Jones & Mentzer bodyweight staple - upright torso, elbows tight. Weighted option 100lbs+.',
-    alternatives: ['Nautilus Tricep Extension', 'Lying Tricep Extension']
+    alternatives: ['Overhead Cable Extension', 'Lying Tricep Extension']
   },
   // LEGS LEGACY
   {
@@ -785,30 +785,30 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
   },
   {
     id: 'ex-nautilus-leg-press',
-    name: 'Nautilus Compound Leg Press',
+    name: 'Heel-Elevated Goblet Squat',
     muscleGroup: 'Legs',
-    targetRepsMin: 8,
+    targetRepsMin: 10,
     targetRepsMax: 15,
-    defaultWarmups: 2,
+    defaultWarmups: 1,
     defaultWorkingSets: 1,
     tempo: '3/1/4',
-    restSeconds: 180,
+    restSeconds: 150,
     isAnkleSafe: true,
-    notes: 'Jones Nautilus compound leg - Mentzer superset immediately after leg extensions, no rest between.',
+    notes: 'Small-gym quad - dumbbell to chest, heels on plates, ankle-safe deep range. No machine needed.',
     alternatives: ['Leg Press 45 Degree', 'Hack Squat']
   },
   {
     id: 'ex-nautilus-bicep-curl',
-    name: 'Nautilus Bicep Curl Machine',
+    name: 'Standing Cable Curl (Straight Bar)',
     muscleGroup: 'Biceps',
-    targetRepsMin: 6,
-    targetRepsMax: 10,
+    targetRepsMin: 8,
+    targetRepsMax: 12,
     defaultWarmups: 1,
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 120,
     isAnkleSafe: true,
-    notes: 'Jones Nautilus bicep cam - Yates favorite old Nautilus piece. Isolate without cheating.',
-    alternatives: ['Machine Preacher Curl', 'EZ-Bar Curl']
+    notes: 'Small-gym cable curl - low pulley straight bar, constant tension, supinate hard. No Nautilus needed.',
+    alternatives: ['EZ-Bar Curl', 'Incline DB Curl']
   },
 ];

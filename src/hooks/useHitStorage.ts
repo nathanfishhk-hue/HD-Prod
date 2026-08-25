@@ -104,12 +104,26 @@ function loadExerciseLibrary(): ExerciseDefinition[] {
       if (Array.isArray(parsed) && parsed.length) {
         const existingIds = new Set(parsed.map(e => e.id));
         const missing = DEFAULT_EXERCISE_LIBRARY.filter(e => !existingIds.has(e.id));
-        if (missing.length) {
-          const merged = [...parsed, ...missing];
+        let merged = missing.length ? [...parsed, ...missing] : parsed;
+        // force-replace Nautilus-era names with small-gym common equivalents (same IDs, new names)
+        const NAUTILUS_REPLACE = new Set(['ex-nautilus-fly','ex-nautilus-press','ex-nautilus-pullover-machine','ex-nautilus-tricep-ext','ex-nautilus-leg-press','ex-nautilus-bicep-curl']);
+        let replaced = false;
+        merged = merged.map(e => {
+          if (NAUTILUS_REPLACE.has(e.id)) {
+            const def = DEFAULT_EXERCISE_LIBRARY.find(d => d.id === e.id);
+            if (def && e.name !== def.name) { replaced = true; return { ...def }; }
+          }
+          // also patch stale alternative strings that still reference Nautilus
+          if (e.alternatives?.some(a => a.includes('Nautilus'))) {
+            const def = DEFAULT_EXERCISE_LIBRARY.find(d => d.id === e.id);
+            if (def) { replaced = true; return { ...def }; }
+          }
+          return e;
+        });
+        if (missing.length || replaced) {
           try { localStorage.setItem(STORAGE_KEYS.EXERCISE_LIBRARY, JSON.stringify(merged)); } catch {}
-          return merged;
         }
-        return parsed;
+        return merged;
       }
     }
   } catch {}
