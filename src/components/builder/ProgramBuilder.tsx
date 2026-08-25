@@ -18,8 +18,6 @@ import {
 } from 'lucide-react';
 import { useHitStorage } from '../../hooks/useHitStorage';
 import { ExerciseDefinition, WorkoutDayConfig, MuscleGroup } from '../../types/hit';
-import { ExerciseDemoModal } from '../exercise/ExerciseDemoModal';
-import { ExerciseAnimation, getAnimationKeyForExercise } from '../exercise/ExerciseAnimation';
 
 interface ProgramBuilderProps {
   storage: ReturnType<typeof useHitStorage>;
@@ -89,7 +87,6 @@ export const ProgramBuilder: React.FC<ProgramBuilderProps> = ({ storage }) => {
   // Custom day
   const [showAddDayModal, setShowAddDayModal] = useState(false);
   const [newDayTitle, setNewDayTitle] = useState('DAY D: ARMS & CORE');
-  const [demoExercise, setDemoExercise] = useState<ExerciseDefinition | null>(null);
 
   const activeDay = days.find(d => d.dayKey === activeDayKey) || days[0];
 
@@ -244,12 +241,9 @@ export const ProgramBuilder: React.FC<ProgramBuilderProps> = ({ storage }) => {
                   </div>
                 ) : (
                   <div className="flex items-start justify-between gap-2">
-                    <div className="flex gap-2">
-                      <div className="hidden sm:block scale-[0.55] origin-top-left -mb-10 -mr-12"><ExerciseAnimation animKey={getAnimationKeyForExercise(ex.name)} size={90} /></div>
-                      <div>
-                      <div className="font-bebas text-sm text-zinc-100 flex items-center gap-1.5">{ex.name} <button onClick={() => setDemoExercise(ex)} className="px-1 py-0.5 bg-sky-950 border border-sky-800 rounded text-[9px] font-mono-code text-sky-300">▶ HOW TO</button> <span className="text-[10px] font-mono-code text-zinc-500">{ex.muscleGroup} • {ex.targetRepsMin}-{ex.targetRepsMax} • {ex.tempo}</span></div>
+                    <div>
+                      <div className="font-bebas text-sm text-zinc-100">{ex.name} <span className="text-[10px] font-mono-code text-zinc-500">{ex.muscleGroup} • {ex.targetRepsMin}-{ex.targetRepsMax} • {ex.tempo}</span></div>
                       <div className="text-[11px] font-mono-code text-zinc-500">{ex.notes?.slice(0,90)}</div>
-                      </div>
                     </div>
                     {!editModeLocked && (
                       <div className="flex gap-1 flex-shrink-0">
@@ -310,7 +304,7 @@ export const ProgramBuilder: React.FC<ProgramBuilderProps> = ({ storage }) => {
                 <div className="flex items-center gap-2">
                   <span className="w-6 h-6 rounded bg-red-950 border border-red-700 text-red-400 font-mono-code font-bold text-xs flex items-center justify-center">{idx+1}</span>
                   <div>
-                    <h4 className="font-bebas text-xl text-zinc-100 flex items-center gap-1.5">{ex.name} <button onClick={() => setDemoExercise(ex)} className="ml-1 px-1.5 py-0.5 bg-sky-950 border border-sky-800 rounded text-[10px] font-mono-code text-sky-300 hover:bg-sky-900">HOW TO ▶</button></h4>
+                    <h4 className="font-bebas text-xl text-zinc-100">{ex.name}</h4>
                     <span className="text-[10px] font-mono-code text-zinc-500">{ex.muscleGroup} • TEMPO {ex.tempo} • REST {ex.restSeconds}s</span>
                   </div>
                 </div>
@@ -324,9 +318,6 @@ export const ProgramBuilder: React.FC<ProgramBuilderProps> = ({ storage }) => {
                     <button onClick={() => reorderExerciseInDay(activeDayKey, idx, Math.min(activeDay.exercises.length-1, idx+1))} disabled={idx===activeDay.exercises.length-1} className="p-1.5 bg-zinc-950 border border-zinc-800 rounded disabled:opacity-30"><ArrowDown className="w-3.5 h-3.5" /></button>
                     <button onClick={() => removeExerciseFromDay(activeDayKey, idx)} className="p-1.5 bg-red-950/60 border border-red-800 text-red-400 rounded"><Trash2 className="w-3.5 h-3.5" /></button>
                   </div>
-                )}
-                {editModeLocked && (
-                  <button onClick={() => setDemoExercise(ex)} className="p-1.5 bg-sky-950 border border-sky-800 rounded text-sky-300 text-xs">▶</button>
                 )}
               </div>
               {!editModeLocked && (
@@ -423,7 +414,6 @@ export const ProgramBuilder: React.FC<ProgramBuilderProps> = ({ storage }) => {
           </div>
         </div>
       )}
-      {demoExercise && <ExerciseDemoModal exercise={demoExercise} onClose={() => setDemoExercise(null)} />}
     </div>
   );
 };

@@ -22,8 +22,6 @@ export interface ExerciseDefinition {
   isAnkleSafe: boolean;
   notes: string;
   alternatives: string[];
-  animationKey?: string;
-  videoUrl?: string;
 }
 
 export interface WorkoutDayConfig {
