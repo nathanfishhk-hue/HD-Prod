@@ -44,15 +44,15 @@ export const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab 
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 bg-zinc-950/95 backdrop-blur-md border-t border-zinc-800 pb-safe">
-      <div className="max-w-6xl mx-auto px-2">
-        <div className="flex items-center justify-around">
+      <div className="max-w-6xl mx-auto px-1 sm:px-2">
+        <div className="flex items-center justify-around gap-0.5">
           {tabs.map(tab => {
             const isActive = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`relative flex flex-col items-center justify-center py-2 px-2 sm:px-4 transition-all duration-150 ${
+                className={`relative flex flex-col items-center justify-center py-1.5 sm:py-2 px-1 sm:px-3 transition-all duration-150 min-w-0 flex-1 ${
                   isActive
                     ? 'text-red-500 font-bold'
                     : 'text-zinc-500 hover:text-zinc-300 font-medium'
@@ -67,7 +67,7 @@ export const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab 
                   {tab.icon}
                 </div>
 
-                <span className="text-[10px] sm:text-xs font-mono-code mt-1 tracking-wider uppercase">
+                <span className="text-[9px] sm:text-xs font-mono-code mt-0.5 sm:mt-1 tracking-wider uppercase truncate w-full text-center leading-none">
                   <span className="hidden sm:inline">{tab.label}</span>
                   <span className="sm:hidden">{tab.shortLabel}</span>
                 </span>

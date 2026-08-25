@@ -124,9 +124,9 @@ export const ProgramBuilder: React.FC<ProgramBuilderProps> = ({ storage }) => {
   if (!activeProgram) return null;
 
   return (
-    <div className="pb-28 max-w-4xl mx-auto px-3 sm:px-4 pt-3">
+    <div className="pb-28 max-w-4xl mx-auto px-3 sm:px-4 pt-3 overflow-x-hidden">
       {/* Header + Lock */}
-      <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-4 mb-4 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-3 sm:p-4 mb-4 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3">
         <div>
           <div className="flex items-center gap-2">
             <Wrench className="w-5 h-5 text-red-500" />
@@ -148,8 +148,8 @@ export const ProgramBuilder: React.FC<ProgramBuilderProps> = ({ storage }) => {
       )}
 
       {/* 1. PROGRAM SWITCHER */}
-      <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-4 mb-4 shadow-xl">
-        <div className="flex items-center justify-between mb-3">
+      <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-3 sm:p-4 mb-4 shadow-xl overflow-hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
           <div className="flex items-center gap-2">
             <Layers className="w-5 h-5 text-red-500" />
             <h3 className="font-bebas text-xl text-zinc-100">PROGRAMS</h3>
@@ -167,15 +167,15 @@ export const ProgramBuilder: React.FC<ProgramBuilderProps> = ({ storage }) => {
             <button
               key={p.id}
               onClick={() => switchProgram(p.id)}
-              className={`px-3 py-2 rounded font-mono-code text-xs font-bold border flex flex-col items-start text-left min-w-[140px] ${activeProgramId === p.id ? 'bg-red-600 border-red-500 text-white shadow-[0_0_12px_rgba(220,38,38,0.4)]' : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700'}`}
+              className={`px-2.5 sm:px-3 py-2 rounded font-mono-code text-xs font-bold border flex flex-col items-start text-left min-w-[120px] sm:min-w-[140px] max-w-[48%] sm:max-w-none ${activeProgramId === p.id ? 'bg-red-600 border-red-500 text-white shadow-[0_0_12px_rgba(220,38,38,0.4)]' : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700'}`}
             >
-              <span className="tracking-wider flex items-center gap-1.5">{p.name} {p.isDefault && <span className="text-[9px] bg-zinc-800 text-amber-400 px-1 rounded">DEFAULT</span>}</span>
-              <span className="text-[10px] opacity-70">{p.days.length} days • {p.weeks.length} wks</span>
+              <span className="tracking-wider flex items-center gap-1.5 truncate w-full">{p.name} {p.isDefault && <span className="text-[9px] bg-zinc-800 text-amber-400 px-1 rounded flex-shrink-0">DEFAULT</span>}</span>
+              <span className="text-[10px] opacity-70 truncate">{p.days.length} days • {p.weeks.length} wks</span>
             </button>
           ))}
         </div>
 
-        <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-2.5 sm:p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 overflow-hidden">
           <div>
             <div className="font-bebas text-lg text-zinc-100">{activeProgram.name}</div>
             <div className="text-xs font-mono-code text-zinc-400">{activeProgram.description}</div>
@@ -201,8 +201,8 @@ export const ProgramBuilder: React.FC<ProgramBuilderProps> = ({ storage }) => {
       </div>
 
       {/* 2. EXERCISE DATABASE */}
-      <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-4 mb-4 shadow-xl">
-        <div className="flex items-center justify-between mb-3">
+      <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-3 sm:p-4 mb-4 shadow-xl overflow-hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
           <div className="flex items-center gap-2">
             <Database className="w-5 h-5 text-sky-400" />
             <h3 className="font-bebas text-xl text-zinc-100">EXERCISE DATABASE</h3>
@@ -240,10 +240,10 @@ export const ProgramBuilder: React.FC<ProgramBuilderProps> = ({ storage }) => {
                     </div>
                   </div>
                 ) : (
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <div className="font-bebas text-sm text-zinc-100">{ex.name} <span className="text-[10px] font-mono-code text-zinc-500">{ex.muscleGroup} • {ex.targetRepsMin}-{ex.targetRepsMax} • {ex.tempo}</span></div>
-                      <div className="text-[11px] font-mono-code text-zinc-500">{ex.notes?.slice(0,90)}</div>
+                  <div className="flex items-start justify-between gap-2 min-w-0">
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bebas text-sm text-zinc-100 truncate pr-1">{ex.name} <span className="text-[10px] font-mono-code text-zinc-500 font-normal">{ex.muscleGroup} • {ex.targetRepsMin}-{ex.targetRepsMax} • {ex.tempo}</span></div>
+                      <div className="text-[11px] font-mono-code text-zinc-500 line-clamp-2 break-words">{ex.notes?.slice(0,90)}</div>
                     </div>
                     {!editModeLocked && (
                       <div className="flex gap-1 flex-shrink-0">
@@ -263,26 +263,26 @@ export const ProgramBuilder: React.FC<ProgramBuilderProps> = ({ storage }) => {
       </div>
 
       {/* 3. DAY TABS */}
-      <div className="flex items-center justify-between gap-2 overflow-x-auto pb-2 mb-4">
-        <div className="flex items-center gap-1.5">
+      <div className="flex items-center justify-between gap-2 overflow-x-auto pb-2 mb-4 -mx-1 px-1 scrollbar-thin">
+        <div className="flex items-center gap-1.5 flex-shrink-0">
           {days.map(d => (
             <button
               key={d.dayKey}
               onClick={() => setActiveDayKey(d.dayKey)}
-              className={`px-3 py-2 rounded font-bebas text-lg tracking-wider ${activeDayKey === d.dayKey ? 'bg-red-600 text-white' : 'bg-zinc-950 border border-zinc-800 text-zinc-400'}`}
+              className={`px-3 py-2 rounded font-bebas text-lg tracking-wider flex-shrink-0 ${activeDayKey === d.dayKey ? 'bg-red-600 text-white' : 'bg-zinc-950 border border-zinc-800 text-zinc-400'}`}
             >
               {d.title.split(':')[0]}
             </button>
           ))}
         </div>
         {!editModeLocked && (
-          <button onClick={() => setShowAddDayModal(true)} className="px-3 py-2 bg-zinc-900 border border-zinc-700 rounded font-mono-code text-xs font-bold flex items-center gap-1"><Plus className="w-4 h-4 text-red-500" /> ADD DAY</button>
+          <button onClick={() => setShowAddDayModal(true)} className="px-3 py-2 bg-zinc-900 border border-zinc-700 rounded font-mono-code text-xs font-bold flex items-center gap-1 flex-shrink-0"><Plus className="w-4 h-4 text-red-500" /> ADD DAY</button>
         )}
       </div>
 
       {/* 4. ACTIVE DAY EXERCISES */}
-      <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-4 mb-6 shadow-xl">
-        <div className="flex items-center justify-between border-b border-zinc-800 pb-3 mb-4">
+      <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-3 sm:p-4 mb-6 shadow-xl overflow-hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-800 pb-3 mb-4">
           <div>
             <h3 className="font-bebas text-2xl text-zinc-100">{activeDay?.title}</h3>
             <p className="text-xs font-mono-code text-zinc-400">{activeDay?.description}</p>
@@ -299,24 +299,26 @@ export const ProgramBuilder: React.FC<ProgramBuilderProps> = ({ storage }) => {
 
         <div className="space-y-3">
           {activeDay?.exercises.map((ex, idx) => (
-            <div key={ex.id + idx} className="bg-zinc-900/90 border border-zinc-800 rounded-lg p-3.5 flex flex-col gap-3">
-              <div className="flex sm:items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <span className="w-6 h-6 rounded bg-red-950 border border-red-700 text-red-400 font-mono-code font-bold text-xs flex items-center justify-center">{idx+1}</span>
-                  <div>
-                    <h4 className="font-bebas text-xl text-zinc-100">{ex.name}</h4>
-                    <span className="text-[10px] font-mono-code text-zinc-500">{ex.muscleGroup} • TEMPO {ex.tempo} • REST {ex.restSeconds}s</span>
+            <div key={ex.id + idx} className="bg-zinc-900/90 border border-zinc-800 rounded-lg p-3 sm:p-3.5 flex flex-col gap-3 overflow-hidden">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 min-w-0">
+                <div className="flex items-center gap-2 min-w-0 flex-1">
+                  <span className="w-6 h-6 rounded bg-red-950 border border-red-700 text-red-400 font-mono-code font-bold text-xs flex items-center justify-center flex-shrink-0">{idx+1}</span>
+                  <div className="min-w-0 flex-1">
+                    <h4 className="font-bebas text-lg sm:text-xl text-zinc-100 truncate pr-1">{ex.name}</h4>
+                    <span className="text-[10px] font-mono-code text-zinc-500 block truncate">{ex.muscleGroup} • TEMPO {ex.tempo} • REST {ex.restSeconds}s</span>
                   </div>
                 </div>
                 {!editModeLocked && (
-                  <div className="flex items-center gap-1">
-                    <select value={ex.id} onChange={e => { const found = exerciseLibrary.find(x=>x.id===e.target.value); if(found) swapExercise(activeDayKey, idx, found); }} className="bg-zinc-950 border border-zinc-700 rounded px-2 py-1 text-xs font-mono-code text-zinc-300 max-w-[180px]">
+                  <div className="flex items-center gap-1 flex-wrap sm:flex-nowrap w-full sm:w-auto">
+                    <select value={ex.id} onChange={e => { const found = exerciseLibrary.find(x=>x.id===e.target.value); if(found) swapExercise(activeDayKey, idx, found); }} className="flex-1 sm:flex-none bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-xs font-mono-code text-zinc-300 min-w-0 sm:max-w-[180px]">
                       <option value={ex.id}>SWAP...</option>
                       {exerciseLibrary.map(lib => <option key={lib.id} value={lib.id}>{lib.name} ({lib.muscleGroup})</option>)}
                     </select>
+                    <div className="flex gap-1 flex-shrink-0">
                     <button onClick={() => reorderExerciseInDay(activeDayKey, idx, Math.max(0, idx-1))} disabled={idx===0} className="p-1.5 bg-zinc-950 border border-zinc-800 rounded disabled:opacity-30"><ArrowUp className="w-3.5 h-3.5" /></button>
                     <button onClick={() => reorderExerciseInDay(activeDayKey, idx, Math.min(activeDay.exercises.length-1, idx+1))} disabled={idx===activeDay.exercises.length-1} className="p-1.5 bg-zinc-950 border border-zinc-800 rounded disabled:opacity-30"><ArrowDown className="w-3.5 h-3.5" /></button>
                     <button onClick={() => removeExerciseFromDay(activeDayKey, idx)} className="p-1.5 bg-red-950/60 border border-red-800 text-red-400 rounded"><Trash2 className="w-3.5 h-3.5" /></button>
+                    </div>
                   </div>
                 )}
               </div>

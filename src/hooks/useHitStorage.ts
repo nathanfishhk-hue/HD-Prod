@@ -60,6 +60,26 @@ const DEFAULT_BODY_STATS_ROB: BodyStatEntry[] = [
   { id: 'rob-stat-1', date: new Date(Date.now() - 14 * 86400000).toISOString().split('T')[0], weightKg: 93.0, waistCm: 92.0, bfPercent: 20.5, proteinIntakeG: 180, creatineTaken: true, sleepHours: 7.0, notes: 'Rob baseline.' },
   { id: 'rob-stat-2', date: new Date().toISOString().split('T')[0], weightKg: 92.0, waistCm: 91.0, bfPercent: 20.0, proteinIntakeG: 185, creatineTaken: true, sleepHours: 7.0, notes: 'Current.' }
 ];
+const DEFAULT_ZITA_PROFILE: UserProfile = {
+  name: "Zita",
+  age: 30,
+  heightCm: 168,
+  weightKg: 68.0,
+  bfPercent: 24.0,
+  experienceLevel: "Intermediate",
+  sessionsPerWeek: 3,
+  ankleMobilityLimited: false,
+  dislikesLegsLovesUpper: false,
+  goal: "6-Month Heavy Duty Recomp",
+  targetCalorieDeficit: 300,
+  targetProteinGrams: 140,
+  targetCreatineGrams: 5,
+  targetSleepHours: 7
+};
+const DEFAULT_BODY_STATS_ZITA: BodyStatEntry[] = [
+  { id: 'zita-stat-1', date: new Date(Date.now() - 14 * 86400000).toISOString().split('T')[0], weightKg: 69.0, waistCm: 76.0, bfPercent: 24.5, proteinIntakeG: 135, creatineTaken: true, sleepHours: 7.0, notes: 'Zita baseline.' },
+  { id: 'zita-stat-2', date: new Date().toISOString().split('T')[0], weightKg: 68.0, waistCm: 75.0, bfPercent: 24.0, proteinIntakeG: 140, creatineTaken: true, sleepHours: 7.0, notes: 'Current.' }
+];
 const DEFAULT_BODY_STATS_NATE: BodyStatEntry[] = [
   { id: 'stat-1', date: new Date(Date.now() - 14 * 86400000).toISOString().split('T')[0], weightKg: 101.5, waistCm: 96.0, bfPercent: 25.5, proteinIntakeG: 190, creatineTaken: true, sleepHours: 6.5, notes: 'Initial baseline.' },
   { id: 'stat-2', date: new Date(Date.now() - 7 * 86400000).toISOString().split('T')[0], weightKg: 100.8, waistCm: 95.2, bfPercent: 25.1, proteinIntakeG: 205, creatineTaken: true, sleepHours: 7.0, notes: 'Incline press up +2.5kg.' },
@@ -74,8 +94,10 @@ function loadProfiles(): { profiles: Record<string, ProfileData>; activeId: stri
       const parsed = JSON.parse(saved) as Record<string, ProfileData>;
       if (!parsed['nate']) parsed['nate'] = { id: 'nate', profile: { ...DEFAULT_USER_PROFILE, name: 'Nate' }, workoutLogs: [], bodyStats: DEFAULT_BODY_STATS_NATE };
       if (!parsed['rob']) parsed['rob'] = { id: 'rob', profile: DEFAULT_ROB_PROFILE, workoutLogs: [], bodyStats: DEFAULT_BODY_STATS_ROB };
+      if (!parsed['zita']) parsed['zita'] = { id: 'zita', profile: DEFAULT_ZITA_PROFILE, workoutLogs: [], bodyStats: DEFAULT_BODY_STATS_ZITA };
       parsed['nate'].profile.name = 'Nate';
       parsed['rob'].profile.name = 'Rob';
+      parsed['zita'].profile.name = 'Zita';
       const active = activeSaved && parsed[activeSaved] ? activeSaved : 'nate';
       return { profiles: parsed, activeId: active };
     }
@@ -93,7 +115,7 @@ function loadProfiles(): { profiles: Record<string, ProfileData>; activeId: stri
   } catch {}
   const nateProfile = legacyProfile ? { ...legacyProfile, name: 'Nate' } : { ...DEFAULT_USER_PROFILE, name: 'Nate' };
   const nateStats = legacyStats.length ? legacyStats : DEFAULT_BODY_STATS_NATE;
-  return { profiles: { nate: { id: 'nate', profile: nateProfile, workoutLogs: legacyLogs, bodyStats: nateStats }, rob: { id: 'rob', profile: DEFAULT_ROB_PROFILE, workoutLogs: [], bodyStats: DEFAULT_BODY_STATS_ROB } }, activeId: 'nate' };
+  return { profiles: { nate: { id: 'nate', profile: nateProfile, workoutLogs: legacyLogs, bodyStats: nateStats }, rob: { id: 'rob', profile: DEFAULT_ROB_PROFILE, workoutLogs: [], bodyStats: DEFAULT_BODY_STATS_ROB }, zita: { id: 'zita', profile: DEFAULT_ZITA_PROFILE, workoutLogs: [], bodyStats: DEFAULT_BODY_STATS_ZITA } }, activeId: 'nate' };
 }
 
 function loadExerciseLibrary(): ExerciseDefinition[] {
@@ -396,7 +418,8 @@ export function useHitStorage() {
     if (confirm('Reset ALL profiles, programs, library? This wipes everything.')) {
       const freshProfiles: Record<string, ProfileData> = {
         nate: { id: 'nate', profile: { ...DEFAULT_USER_PROFILE, name: 'Nate' }, workoutLogs: [], bodyStats: [{ id: 'stat-1', date: new Date().toISOString().split('T')[0], weightKg: 100, waistCm: 94.5, bfPercent: 25, proteinIntakeG: 210, creatineTaken: true, sleepHours: 7, notes: 'Reset.' }] },
-        rob: { id: 'rob', profile: DEFAULT_ROB_PROFILE, workoutLogs: [], bodyStats: [{ id: 'rob-stat-1', date: new Date().toISOString().split('T')[0], weightKg: 92, waistCm: 91, bfPercent: 20, proteinIntakeG: 185, creatineTaken: true, sleepHours: 7, notes: 'Reset.' }] }
+        rob: { id: 'rob', profile: DEFAULT_ROB_PROFILE, workoutLogs: [], bodyStats: [{ id: 'rob-stat-1', date: new Date().toISOString().split('T')[0], weightKg: 92, waistCm: 91, bfPercent: 20, proteinIntakeG: 185, creatineTaken: true, sleepHours: 7, notes: 'Reset.' }] },
+        zita: { id: 'zita', profile: DEFAULT_ZITA_PROFILE, workoutLogs: [], bodyStats: [{ id: 'zita-stat-1', date: new Date().toISOString().split('T')[0], weightKg: 68, waistCm: 75, bfPercent: 24, proteinIntakeG: 140, creatineTaken: true, sleepHours: 7, notes: 'Reset.' }] }
       };
       const defProg: ProgramConfig = { id: 'hd-recomp-6wk', name: 'HD RECOMP 6-WK', description: 'Original Heavy Duty Recomp.', weeks: DEFAULT_WEEK_PHASES, days: DEFAULT_DAY_CONFIGS, createdAt: new Date().toISOString(), isDefault: true };
       setProfiles(freshProfiles); setActiveProfileId('nate');
