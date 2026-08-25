@@ -15,17 +15,19 @@ export interface ExerciseDefinition {
   muscleGroup: MuscleGroup;
   targetRepsMin: number;
   targetRepsMax: number;
-  defaultWarmups: number; // 1 or 2
-  defaultWorkingSets: number; // usually 1 for HIT
-  tempo: string; // e.g., "3/1/4"
-  restSeconds: number; // e.g., 120 or 180
+  defaultWarmups: number;
+  defaultWorkingSets: number;
+  tempo: string;
+  restSeconds: number;
   isAnkleSafe: boolean;
   notes: string;
-  alternatives: string[]; // exercise names for quick swap
+  alternatives: string[];
+  animationKey?: string;
+  videoUrl?: string;
 }
 
 export interface WorkoutDayConfig {
-  dayKey: string; // 'A', 'B', 'C', 'D'
+  dayKey: string;
   title: string;
   subtitle: string;
   description: string;
@@ -46,7 +48,7 @@ export interface LoggedSet {
   setIndex: number;
   weightKg: number;
   reps: number;
-  rpe: number; // 6-10
+  rpe: number;
   reachedFailure: boolean;
   restPauseReps?: number;
   dropSetWeightKg?: number;
@@ -67,7 +69,7 @@ export interface LoggedExercise {
 
 export interface LoggedWorkout {
   id: string;
-  date: string; // YYYY-MM-DD
+  date: string;
   weekNumber: number;
   dayKey: string;
   dayTitle: string;
@@ -80,7 +82,7 @@ export interface LoggedWorkout {
 
 export interface BodyStatEntry {
   id: string;
-  date: string; // YYYY-MM-DD
+  date: string;
   weightKg: number;
   waistCm: number;
   bfPercent: number;

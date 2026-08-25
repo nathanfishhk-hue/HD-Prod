@@ -33,6 +33,7 @@ import { audioSynth } from '../../utils/audio';
 import { RestTimer } from '../RestTimer';
 import { PlateCalculatorModal } from '../PlateCalculatorModal';
 import { PRAnimationModal } from '../PRAnimationModal';
+import { ExerciseDemoModal } from '../exercise/ExerciseDemoModal';
 
 interface WorkoutRunnerProps {
   storage: ReturnType<typeof useHitStorage>;
@@ -79,6 +80,7 @@ export const WorkoutRunner: React.FC<WorkoutRunnerProps> = ({ storage }) => {
   const [showPlateCalc, setShowPlateCalc] = useState<boolean>(false);
   const [showRestTimer, setShowRestTimer] = useState<boolean>(false);
   const [activeRestSeconds, setActiveRestSeconds] = useState<number>(120);
+  const [showDemo, setShowDemo] = useState<boolean>(false);
   const [prModalData, setPrModalData] = useState<{
     exerciseName: string;
     weightKg: number;
@@ -410,6 +412,14 @@ export const WorkoutRunner: React.FC<WorkoutRunnerProps> = ({ storage }) => {
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowDemo(true)}
+              className="flex items-center gap-1 px-2.5 py-1.5 bg-sky-950 border border-sky-800 hover:border-sky-600 rounded text-xs font-mono-code text-sky-300 transition"
+              title="Show how it's done"
+            >
+              <Play className="w-3.5 h-3.5" />
+              <span>HOW TO</span>
+            </button>
             <button
               onClick={() => setShowPlateCalc(true)}
               className="flex items-center gap-1 px-2.5 py-1.5 bg-zinc-900 border border-zinc-700 hover:border-red-600 rounded text-xs font-mono-code text-zinc-200 transition"
@@ -778,6 +788,7 @@ export const WorkoutRunner: React.FC<WorkoutRunnerProps> = ({ storage }) => {
           onClose={() => setPrModalData(null)}
         />
       )}
+      {showDemo && <ExerciseDemoModal exercise={currentExercise} onClose={() => setShowDemo(false)} />}
     </div>
   );
 };
