@@ -108,3 +108,13 @@ export interface UserProfile {
 }
 
 export type WeightUnit = 'kg' | 'lbs';
+
+export interface ProgramConfig {
+  id: string;
+  name: string;
+  description: string;
+  weeks: WeekPhaseConfig[];
+  days: WorkoutDayConfig[];
+  createdAt: string;
+  isDefault?: boolean;
+}
