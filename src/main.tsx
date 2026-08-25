@@ -3,10 +3,10 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 
-// Register PWA Service Worker for Offline Functionality
-if ('serviceWorker' in navigator && import.meta.env.PROD) {
+// Register PWA Service Worker for Offline Functionality - works on GH Pages with base path
+if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(err => {
+    navigator.serviceWorker.register('./sw.js').catch(err => {
       console.log('Service Worker registration failed:', err);
     });
   });

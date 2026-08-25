@@ -3,29 +3,29 @@
   "name": "HEAVY DUTY RECOMP - 6 Week HIT Tracker",
   "icons": [
     {
-      "src": "/icon-192.png",
+      "src": "./icon-192.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any maskable"
     },
     {
-      "src": "/icon-512.png",
+      "src": "./icon-512.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
     },
     {
-      "src": "/favicon.svg",
+      "src": "./favicon.svg",
       "type": "image/svg+xml",
       "sizes": "512x512",
       "purpose": "any"
     }
   ],
-  "start_url": "/",
+  "start_url": "./",
   "background_color": "#09090b",
   "theme_color": "#09090b",
   "display": "standalone",
   "orientation": "portrait",
-  "scope": "/",
+  "scope": "./",
   "description": "Mentzer & Yates Inspired Brutalist High Intensity Training Logbook & 6-Month Recomp Tracker."
 }
