@@ -1,4 +1,4 @@
-const CACHE_NAME = 'heavy-duty-hit-v1';
+const CACHE_NAME = 'heavy-duty-hit-v3-cyclefix';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
