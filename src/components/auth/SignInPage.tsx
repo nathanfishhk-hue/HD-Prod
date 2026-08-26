@@ -3,7 +3,7 @@ import { useAuth } from '../../hooks/useAuth';
 
 export const SignInPage: React.FC = () => {
   const { signInWithGoogle, clientId, setClientId } = useAuth();
-  const [showSetup, setShowSetup] = useState(!clientId);
+  const [showSetup, setShowSetup] = useState(false);
   const [draft, setDraft] = useState(clientId);
 
   return (

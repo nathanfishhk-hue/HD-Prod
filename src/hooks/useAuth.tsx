@@ -28,10 +28,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<AuthUser | null>(() => {
     try { const s = localStorage.getItem(LS_KEY); return s ? JSON.parse(s) : null; } catch { return null; }
   });
+  const DEFAULT_CLIENT_ID = '590497588669-3vpqju68u65ujb9r0vorkbvk87ihccm5.apps.googleusercontent.com';
   const [clientId, setClientIdState] = useState(() => {
-    // env takes precedence, then saved
+    // env takes precedence, then saved, then hardcoded default
     const env = (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID || '';
-    try { return env || localStorage.getItem(CLIENT_ID_KEY) || ''; } catch { return env; }
+    try { return env || localStorage.getItem(CLIENT_ID_KEY) || DEFAULT_CLIENT_ID; } catch { return env || DEFAULT_CLIENT_ID; }
   });
 
   const setClientId = (id: string) => {
