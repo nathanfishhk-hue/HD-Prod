@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Sparkles, Plus, Key, Eye, EyeOff, X, MessageCircle } from 'lucide-react';
+import { Send, Bot, User, Sparkles, Plus, Key, Eye, EyeOff, X, MessageCircle, Trash2 } from 'lucide-react';
 import { useHitStorage } from '../../hooks/useHitStorage';
 import { EXERCISE_LIBRARY } from '../../data/exerciseLibrary';
 import { DEFAULT_WEEK_PHASES } from '../../data/defaultProgram';
@@ -8,12 +8,7 @@ import { WorkoutDayConfig, ExerciseDefinition } from '../../types/hit';
 interface ChatMsg { role: 'user' | 'assistant'; content: string; programJson?: ParsedProgram | null }
 interface ParsedProgram { name: string; description: string; days: { title: string; description?: string; exerciseNames: string[] }[]; weeks?: number }
 
-const LS_KEY = 'hd_ai_key_v1';
-const LS_MODEL = 'hd_ai_model_v1';
-const LS_BASE = 'hd_ai_base_v1';
-
 const SYSTEM_PROMPT = `You are HEAVY DUTY AI COACH - expert HIT program builder (Mentzer/Yates/Jones).
-Rules:
 - HIT: 1 working set to failure after 1-2 warmups, tempo 3/1/4, rest 2-3min, rest-pause 10-15s +1-2 reps, drop 20% on machines/cables in Overload/Peak, double progression +2.5-5kg, <60min, 3x/week default but adapt to user's days.
 - If user unsure, ASK one question at a time: goal, days/week, injuries/ankle, equipment (small gym = NO Nautilus, use cables/dumbbells), experience, favorite/hated muscles, time per session. Never assume.
 - Available exercises (MUST use ONLY these names exactly): ${EXERCISE_LIBRARY.map(e=>e.name).join(', ')}.
@@ -22,8 +17,7 @@ Rules:
 {"name":"MY CUSTOM PROGRAM","description":"...","days":[{"title":"DAY A: CHEST & BACK","description":"...","exerciseNames":["Pec Deck Fly","Incline Barbell Press 30deg","Dumbbell Pullover","Chest-Supported Row","Rack Pull (Knee Height)"]}]}
 \`\`\`
 - 3-6 days, 4-6 exercises per day, ankle-safe if needed, 6 weeks standard phases.
-- Never replace existing programs.
-- Concise brutalist tone.`;
+- Never replace existing programs. Concise tone.`;
 
 function parseProgram(text: string): ParsedProgram | null {
   const m = text.match(/```json\s*([\s\S]*?)```/);
@@ -35,29 +29,26 @@ function parseProgram(text: string): ParsedProgram | null {
 export const FloatingAIChat: React.FC<{ storage: ReturnType<typeof useHitStorage> }> = ({ storage }) => {
   const { exerciseLibrary, createProgram } = storage;
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<ChatMsg[]>(() => {
-    const s = localStorage.getItem('hd_ai_history_v2');
-    if (s) try { return JSON.parse(s); } catch {}
-    return [{ role: 'assistant', content: 'Yo — I\'m your Heavy Duty AI Coach. Tell me your goal, days/week, injuries, and what you love/hate. Say "not sure" and I\'ll ask one at a time. I\'ll build a brand NEW program for Builder — never touching HD RECOMP 6-WK.' }];
-  });
+  const [messages, setMessages] = useState<ChatMsg[]>([{ role: 'assistant', content: 'Yo — I\'m your Heavy Duty AI Coach. Tell me your goal, days/week, injuries, and what you love/hate. Say "not sure" and I\'ll ask one at a time. I\'ll build a brand NEW program for Builder — never touching HD RECOMP 6-WK.' }]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [apiKey, setApiKey] = useState(() => localStorage.getItem(LS_KEY) || '');
-  const [baseUrl, setBaseUrl] = useState(() => localStorage.getItem(LS_BASE) || 'https://api.openai.com/v1');
-  const [model, setModel] = useState(() => localStorage.getItem(LS_MODEL) || 'gpt-4o-mini');
+  const [apiKey, setApiKey] = useState('');
+  const [baseUrl, setBaseUrl] = useState('https://api.openai.com/v1');
+  const [model, setModel] = useState('gpt-4o-mini');
   const [showKey, setShowKey] = useState(false);
   const chatRef = useRef<HTMLDivElement>(null);
 
-  useEffect(()=>{ localStorage.setItem('hd_ai_history_v2', JSON.stringify(messages.slice(-30))); },[messages]);
+  // Clear any legacy local AI storage on mount (no local persistence)
+  useEffect(()=>{
+    try { localStorage.removeItem('hd_ai_key_v1'); localStorage.removeItem('hd_ai_base_v1'); localStorage.removeItem('hd_ai_model_v1'); localStorage.removeItem('hd_ai_history_v1'); localStorage.removeItem('hd_ai_history_v2'); } catch {}
+  },[]);
+
   useEffect(()=>{ chatRef.current?.scrollTo({ top: chatRef.current.scrollHeight, behavior: 'smooth' }); },[messages, loading]);
-  useEffect(()=>{ localStorage.setItem(LS_KEY, apiKey); },[apiKey]);
-  useEffect(()=>{ localStorage.setItem(LS_BASE, baseUrl); },[baseUrl]);
-  useEffect(()=>{ localStorage.setItem(LS_MODEL, model); },[model]);
 
   const send = async () => {
     const t = input.trim();
     if (!t || loading) return;
-    if (!apiKey.trim()) { alert('Paste OpenAI API key first (stored locally). Get at https://platform.openai.com/api-keys'); return; }
+    if (!apiKey.trim()) { alert('Paste OpenAI API key for this session (not stored). Get at https://platform.openai.com/api-keys'); return; }
     const userMsg: ChatMsg = { role: 'user', content: t };
     setMessages(p=>[...p, userMsg]);
     setInput('');
@@ -102,9 +93,12 @@ export const FloatingAIChat: React.FC<{ storage: ReturnType<typeof useHitStorage
     setOpen(false);
   };
 
+  const clearChat = () => {
+    setMessages([{ role: 'assistant', content: 'Cleared. Tell me your goal and I\'ll ask one at a time.' }]);
+  };
+
   return (
     <>
-      {/* Floating circle */}
       <button onClick={()=>setOpen(v=>!v)} className="fixed bottom-20 right-4 z-40 w-14 h-14 rounded-full bg-fuchsia-600 hover:bg-fuchsia-500 text-white shadow-[0_4px_24px_rgba(192,38,211,0.5)] flex items-center justify-center border-2 border-fuchsia-400/50 transition" aria-label="AI Coach">
         {open ? <X className="w-6 h-6"/> : <Bot className="w-7 h-7"/>}
       </button>
@@ -115,22 +109,25 @@ export const FloatingAIChat: React.FC<{ storage: ReturnType<typeof useHitStorage
               <div className="w-7 h-7 rounded-full bg-fuchsia-600 flex items-center justify-center"><Bot className="w-4 h-4 text-white"/></div>
               <div>
                 <div className="font-bebas text-sm text-fuchsia-300 tracking-wider">AI COACH</div>
-                <div className="text-[10px] font-mono-code text-zinc-400">Builds NEW program → Builder</div>
+                <div className="text-[10px] font-mono-code text-zinc-400">Builds NEW program → Builder · session only</div>
               </div>
             </div>
-            <button onClick={()=>setOpen(false)} className="p-1.5 bg-zinc-900 rounded-full text-zinc-400"><X className="w-4 h-4"/></button>
+            <div className="flex items-center gap-1">
+              <button onClick={clearChat} className="p-1.5 bg-zinc-900 rounded-full text-zinc-500 hover:text-zinc-300" title="Clear chat"><Trash2 className="w-4 h-4"/></button>
+              <button onClick={()=>setOpen(false)} className="p-1.5 bg-zinc-900 rounded-full text-zinc-400"><X className="w-4 h-4"/></button>
+            </div>
           </div>
 
           <div className="p-2 bg-zinc-900/50 border-b border-zinc-800 space-y-1">
             <div className="flex gap-1">
-              <input type={showKey?'text':'password'} value={apiKey} onChange={e=>setApiKey(e.target.value)} placeholder="sk-... (stored locally)" className="flex-1 bg-zinc-950 border border-zinc-800 rounded px-2 py-1 text-xs font-mono-code" />
+              <input type={showKey?'text':'password'} value={apiKey} onChange={e=>setApiKey(e.target.value)} placeholder="sk-... (session only, not stored)" className="flex-1 bg-zinc-950 border border-zinc-800 rounded px-2 py-1 text-xs font-mono-code" />
               <button onClick={()=>setShowKey(v=>!v)} className="p-1.5 bg-zinc-800 rounded text-zinc-400">{showKey?<EyeOff className="w-3.5 h-3.5"/>:<Eye className="w-3.5 h-3.5"/>}</button>
             </div>
             <div className="flex gap-1">
               <input value={model} onChange={e=>setModel(e.target.value)} placeholder="gpt-4o-mini" className="flex-1 bg-zinc-950 border border-zinc-800 rounded px-2 py-1 text-[11px] font-mono-code" />
               <input value={baseUrl} onChange={e=>setBaseUrl(e.target.value)} placeholder="https://api.openai.com/v1" className="flex-1 bg-zinc-950 border border-zinc-800 rounded px-2 py-1 text-[11px] font-mono-code text-zinc-500" />
             </div>
-            {!apiKey && <div className="text-[10px] font-mono-code text-amber-400 flex items-center gap-1"><Key className="w-3 h-3"/> Paste key to chat.</div>}
+            <div className="text-[10px] font-mono-code text-zinc-500 flex items-center gap-1"><Key className="w-3 h-3"/> Key + chat stay in memory only — cleared on refresh/close. Nothing saved to device.</div>
           </div>
 
           <div ref={chatRef} className="flex-1 overflow-y-auto p-3 space-y-3 bg-zinc-950">
@@ -161,7 +158,6 @@ export const FloatingAIChat: React.FC<{ storage: ReturnType<typeof useHitStorage
           </div>
         </div>
       )}
-      {/* Hint pill when closed */}
       {!open && <div className="fixed bottom-20 right-[76px] z-40 hidden sm:flex items-center gap-1 bg-zinc-900 border border-zinc-800 text-zinc-400 text-xs font-mono-code px-2.5 py-1 rounded-full shadow"><MessageCircle className="w-3.5 h-3.5 text-fuchsia-400"/> AI Coach</div>}
     </>
   );
