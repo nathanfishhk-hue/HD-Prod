@@ -19,7 +19,6 @@ export interface ExerciseDefinition {
   defaultWorkingSets: number;
   tempo: string;
   restSeconds: number;
-  isAnkleSafe: boolean;
   notes: string;
   alternatives: string[];
 }
@@ -98,7 +97,6 @@ export interface UserProfile {
   bfPercent: number;
   experienceLevel: 'Beginner' | 'Intermediate' | 'Advanced';
   sessionsPerWeek: number;
-  ankleMobilityLimited: boolean;
   dislikesLegsLovesUpper: boolean;
   goal: string;
   targetCalorieDeficit: number;

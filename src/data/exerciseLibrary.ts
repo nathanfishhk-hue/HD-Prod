@@ -12,7 +12,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 120,
-    isAnkleSafe: true,
+
     notes: 'Squeeze hard at center pause. Pure isolated pec pre-exhaust before pressing.',
     alternatives: ['Cable Crossover', 'Incline Cable Fly', 'Dumbbell Fly']
   },
@@ -26,7 +26,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 180,
-    isAnkleSafe: true,
+
     notes: '30-degree bench angle. Lower to upper chest under 4s negative. Stop 1 inch above chest.',
     alternatives: ['Incline Dumbbell Press', 'Incline Smith Machine Press', 'Incline Hammer Strength Press']
   },
@@ -40,7 +40,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 120,
-    isAnkleSafe: true,
+
     notes: 'Classic dumbbell lat pullover - lie crosswise on bench, hips low, stretch lats deep behind head then pull with elbows.',
     alternatives: ['Machine Pullover', 'Straight Arm Cable Pulldown', 'Lat Pulldown Wide Grip']
   },
@@ -54,8 +54,8 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 180,
-    isAnkleSafe: true,
-    notes: 'Saves lower back & ankle strain. Pull elbows deep, squeeze rhomboids for 1 second.',
+
+    notes: 'Saves lower back strain. Pull elbows deep, squeeze rhomboids for 1 second.',
     alternatives: ['Hammer Lat Pulldown', 'Seated Cable Row V-Bar', 'T-Bar Row Chest-Supported']
   },
   {
@@ -68,7 +68,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 180,
-    isAnkleSafe: true,
+
     notes: 'Bar set right at knee height. Neutral spine, drive hips forward, squeeze glutes and lats.',
     alternatives: ['Barbell Shrugs', 'Trap Bar Deadlift Knee Height', 'Hyperextension Weighted']
   },
@@ -84,7 +84,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 120,
-    isAnkleSafe: true,
+
     notes: 'Ankle Safe! Isolate quads to failure before compound press. Hold peak contraction for 1 sec.',
     alternatives: ['Sissy Squat Machine', 'Single Leg Extension']
   },
@@ -98,8 +98,8 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 180,
-    isAnkleSafe: true,
-    notes: 'Ankle Safe replacement for barbell squat. High & wide foot placement relieves ankle angle requirement.',
+
+    notes: 'High & wide foot placement for deep range.',
     alternatives: ['Belt Squat (Heel Elevated)', 'Hack Press Machine', 'Smith Machine Squat (Heel Elevated)']
   },
   {
@@ -112,7 +112,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 120,
-    isAnkleSafe: true,
+
     notes: 'Ankle Safe! Keep thighs locked down firmly under pad. Slow 4-second return.',
     alternatives: ['Lying Leg Curl', 'Standing Single Leg Curl']
   },
@@ -126,7 +126,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/2/4',
     restSeconds: 120,
-    isAnkleSafe: true,
+
     notes: 'Deep stretch at bottom (2 sec pause), drive up on big toe, hold peak 2 sec.',
     alternatives: ['Seated Calf Raise', 'Leg Press Calf Press']
   },
@@ -140,7 +140,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 90,
-    isAnkleSafe: true,
+
     notes: 'Kneel on mat, flex spine bringing elbows to thighs. Keep hips motionless.',
     alternatives: ['Ab Machine Crunch', 'Decline Weighted Crunch']
   },
@@ -154,7 +154,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 90,
-    isAnkleSafe: true,
+
     notes: 'Control body momentum. Curl pelvis upward at top to engage lower rectus abdominis.',
     alternatives: ['Captain Chair Leg Raise', 'Reverse Crunch']
   },
@@ -170,7 +170,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 180,
-    isAnkleSafe: true,
+
     notes: 'Heavy shoulder press. High incline bench support. Palms facing slightly inward.',
     alternatives: ['Machine Shoulder Press', 'Smith Machine Overhead Press', 'Standing Arnold Press']
   },
@@ -184,7 +184,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 120,
-    isAnkleSafe: true,
+
     notes: 'Constant tension across side delt. Lead with elbows, control 4-second negative.',
     alternatives: ['Dumbbell Lateral Raise', 'Machine Lateral Raise']
   },
@@ -198,7 +198,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 120,
-    isAnkleSafe: true,
+
     notes: 'Chest flush against pad. Keep wrists loose, squeeze rear delts at outer range.',
     alternatives: ['Face Pull Cable', 'Bent-Over Dumbbell Fly']
   },
@@ -212,7 +212,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 120,
-    isAnkleSafe: true,
+
     notes: 'Spread rope handles wide at bottom. Elbows pinned to ribs. Full extension squeeze.',
     alternatives: ['Overhead Cable Tricep Extension', 'Skullcrushers EZ-Bar', 'Dips Machine']
   },
@@ -226,7 +226,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 120,
-    isAnkleSafe: true,
+
     notes: 'Bench set at 60 degrees. Deep stretch at bottom. Supinate wrist hard on way up.',
     alternatives: ['EZ-Bar Standing Curl', 'Cable Curl Straight Bar', 'Hammer Dumbbell Curl']
   },
@@ -240,7 +240,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 120,
-    isAnkleSafe: true,
+
     notes: 'Isolate short head of bicep. Complete failure under 4-second negative control.',
     alternatives: ['Spider Curl Dumbbell', 'Concentration Curl']
   },
@@ -257,7 +257,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 120,
-    isAnkleSafe: true,
+
     notes: 'Mentzer staple - pre-exhaust before incline press. Deep stretch at bottom, elbows soft, 4s negative.',
     alternatives: ['Pec Deck Fly', 'Cable Crossover']
   },
@@ -271,7 +271,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 120,
-    isAnkleSafe: true,
+
     notes: 'Small-gym fly replacement - cables from high pulleys, chest isolation, 4s negative, pre-exhaust before presses.',
     alternatives: ['Pec Deck Fly', 'Dumbbell Fly (Flat)']
   },
@@ -285,7 +285,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 180,
-    isAnkleSafe: true,
+
     notes: 'Common plate-loaded or stack press - every small gym has one. Mentzer compound after flyes, HIT to failure.',
     alternatives: ['Incline Barbell Press 30deg', 'Flat Dumbbell Press']
   },
@@ -299,7 +299,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 180,
-    isAnkleSafe: true,
+
     notes: 'Yates chest finisher. Neutral grip at top, stretch deep, explosive concentric.',
     alternatives: ['Flat Barbell Bench Press', 'Hammer Strength Press']
   },
@@ -313,7 +313,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 180,
-    isAnkleSafe: true,
+
     notes: 'Yates favorite incline - unilateral, 30deg, pre-exhausted chest. 2-3 forced reps beyond failure.',
     alternatives: ['Incline Barbell Press 30deg', 'Incline Smith Press']
   },
@@ -327,7 +327,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 180,
-    isAnkleSafe: true,
+
     notes: 'Mentzer & Jones finisher. Lean forward, elbows flared, 5-rep negative-only option elite.',
     alternatives: ['Dips Machine', 'Decline Barbell Press']
   },
@@ -342,7 +342,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 150,
-    isAnkleSafe: true,
+
     notes: 'Every small gym has this - lat pulldown replaces Nautilus pullover. Wide overhand grip, stretch at top, pull to chest.',
     alternatives: ['Dumbbell Pullover', 'Straight Arm Pulldown']
   },
@@ -356,7 +356,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 120,
-    isAnkleSafe: true,
+
     notes: 'Mentzer alternative - arms straight, drive elbows to hips, lat isolation. Common cable stack.',
     alternatives: ['Wide-Grip Lat Pulldown', 'Dumbbell Pullover']
   },
@@ -370,7 +370,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 150,
-    isAnkleSafe: true,
+
     notes: 'Mentzer back staple - palms-up narrow grip for deep lat stretch. Superset after pullovers.',
     alternatives: ['Hammer Lat Pulldown', 'Chin-Up']
   },
@@ -384,7 +384,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 150,
-    isAnkleSafe: true,
+
     notes: 'Yates go-to after bicep tear 94. Unilateral, straps used, 2-3 forced reps.',
     alternatives: ['Close-Grip Underhand Pulldown', 'Wide Grip Lat Pulldown']
   },
@@ -398,7 +398,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 180,
-    isAnkleSafe: true,
+
     notes: 'Yates signature - underhand grip, torso 45deg, bar to waist, explosive up / 4s down. Until 1994.',
     alternatives: ['Chest-Supported Row', 'T-Bar Row']
   },
@@ -412,7 +412,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 180,
-    isAnkleSafe: true,
+
     notes: 'Post-1994 Yates variation. Overhand protects bicep. Pull to lower ribs, strict.',
     alternatives: ['Yates Row', 'One-Arm Dumbbell Row']
   },
@@ -426,7 +426,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 120,
-    isAnkleSafe: true,
+
     notes: 'Mentzer & Jones - unilateral, full stretch at bottom, elbow drives to hip. 2 sets in early HIT.',
     alternatives: ['One-Arm Hammer Row', 'Chest-Supported Row']
   },
@@ -440,7 +440,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 150,
-    isAnkleSafe: true,
+
     notes: 'Yates unilateral hammer row - DY Row machine, plate-loaded, peak squeeze 1s.',
     alternatives: ['One-Arm Dumbbell Row', 'Seated Cable Row']
   },
@@ -454,7 +454,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 150,
-    isAnkleSafe: true,
+
     notes: 'Yates accessory - neutral grip, stretch forward, pull to navel. Straps recommended.',
     alternatives: ['Chest-Supported Row', 'One-Arm Hammer Row']
   },
@@ -468,7 +468,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/2',
     restSeconds: 240,
-    isAnkleSafe: true,
+
     notes: 'Mentzer favorite - single heaviest recruiter. Continuous tension variant per Yates (no floor bounce).',
     alternatives: ['Rack Pull', 'Trap Bar Deadlift']
   },
@@ -482,7 +482,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 120,
-    isAnkleSafe: true,
+
     notes: 'Yates pre-exhaust before deadlifts. Plate held to chest, isolate lower back/erectors.',
     alternatives: ['Rack Pull', 'Barbell Deadlift']
   },
@@ -496,7 +496,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 150,
-    isAnkleSafe: true,
+
     notes: 'Jones & Mentzer - bodyweight to failure + partner assist/rest-pause. Great bicep/lat combo.',
     alternatives: ['Close-Grip Underhand Pulldown', 'Hammer Pulldown']
   },
@@ -511,7 +511,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '2/1/3',
     restSeconds: 120,
-    isAnkleSafe: true,
+
     notes: 'Mentzer trap superset with upright rows. Hold peak 1s, no rolling shoulders.',
     alternatives: ['Machine Shrug', 'Dumbbell Shrug']
   },
@@ -525,7 +525,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 120,
-    isAnkleSafe: true,
+
     notes: 'Mentzer trap/shoulder superset. Elbows lead, bar to chin, control negative.',
     alternatives: ['Machine Shrug', 'Cable Upright Row']
   },
@@ -539,7 +539,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 180,
-    isAnkleSafe: true,
+
     notes: 'Yates front delt staple - seated Smith, minimal back assist. 2 warmups x 12-15 then 1x8-10 to failure.',
     alternatives: ['Seated DB Shoulder Press', 'Machine Shoulder Press']
   },
@@ -553,7 +553,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 150,
-    isAnkleSafe: true,
+
     notes: 'Mentzer superset with DB laterals. Behind-neck to ear level only, strict.',
     alternatives: ['Smith Machine Military Press', 'Seated DB Press']
   },
@@ -567,7 +567,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 120,
-    isAnkleSafe: true,
+
     notes: 'Yates side delt - seated for strictness, no swing. Yates did 2 side delt exercises.',
     alternatives: ['Cable Lateral Raise', 'Machine Lateral Raise']
   },
@@ -581,7 +581,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 90,
-    isAnkleSafe: true,
+
     notes: 'Yates constant tension side delt - cable gives resistance from stretch to contraction.',
     alternatives: ['Cable Lateral Raise', 'Seated Dumbbell Lateral']
   },
@@ -595,7 +595,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 120,
-    isAnkleSafe: true,
+
     notes: 'Mentzer rear delt - bent over, wrists neutral, squeeze rear delts.',
     alternatives: ['Rear Delt Fly Machine', 'Face Pull']
   },
@@ -610,7 +610,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 120,
-    isAnkleSafe: true,
+
     notes: 'Mentzer staple - superset with chin-ups. Strict, no swing, 4s negative.',
     alternatives: ['EZ-Bar Curl', 'Incline DB Curl']
   },
@@ -624,7 +624,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 120,
-    isAnkleSafe: true,
+
     notes: 'Yates bicep core - 1 warmup x10, 1x6-8 to failure. Never beyond failure for biceps (Yates rule).',
     alternatives: ['Barbell Curl', 'Machine Preacher Curl']
   },
@@ -638,7 +638,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 90,
-    isAnkleSafe: true,
+
     notes: 'Mentzer & Jones peaking movement. Seated, elbow on inner thigh, isolate bicep peak.',
     alternatives: ['Machine Preacher Curl', 'Incline DB Curl']
   },
@@ -652,7 +652,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 120,
-    isAnkleSafe: true,
+
     notes: 'Yates brachialis variant. Neutral grip, 4s eccentric to protect elbows.',
     alternatives: ['EZ-Bar Curl', 'Barbell Curl']
   },
@@ -666,7 +666,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 120,
-    isAnkleSafe: true,
+
     notes: 'Mentzer & Yates - EZ-bar to forehead, elbows fixed. Keep as press, not bench. Spotter needed.',
     alternatives: ['Rope Tricep Pushdown', 'Overhead Cable Tricep Extension']
   },
@@ -680,7 +680,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 120,
-    isAnkleSafe: true,
+
     notes: 'Small-gym cable overhead - rope over head, elbows forward, stretch long head. Common cable stack.',
     alternatives: ['Rope Tricep Pushdown', 'Lying Tricep Extension']
   },
@@ -694,7 +694,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 120,
-    isAnkleSafe: true,
+
     notes: 'Yates pushdown - straight/EZ bar, elbows pinned. 2 warmups x12-15 then 1x8-10 beyond failure.',
     alternatives: ['Rope Tricep Pushdown', 'Overhead Cable Tricep Extension']
   },
@@ -708,7 +708,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 150,
-    isAnkleSafe: true,
+
     notes: 'Jones & Mentzer bodyweight staple - upright torso, elbows tight. Weighted option 100lbs+.',
     alternatives: ['Overhead Cable Extension', 'Lying Tricep Extension']
   },
@@ -723,7 +723,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 180,
-    isAnkleSafe: true,
+
     notes: 'Yates quad finisher after leg press. Narrow stance for outer sweep, 10-12 reps. Pre-exhausted quads.',
     alternatives: ['Leg Press', 'Smith Machine Squat']
   },
@@ -737,7 +737,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 180,
-    isAnkleSafe: true,
+
     notes: 'Yates Smith squat post-1988 hip injury - heels together toes out isolates quads, less glute/low-back.',
     alternatives: ['Hack Squat', 'Leg Press']
   },
@@ -751,7 +751,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 120,
-    isAnkleSafe: true,
+
     notes: 'Yates hamstring pre-exhaust before SLDL. Hips pinned, hamstrings to failure.',
     alternatives: ['Seated Leg Curl', 'Standing Leg Curl']
   },
@@ -765,7 +765,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 180,
-    isAnkleSafe: true,
+
     notes: 'Yates & Mentzer hamstring compound after leg curls. Slight knee bend, stretch hamstrings, no bounce.',
     alternatives: ['Romanian Deadlift', 'Lying Leg Curl']
   },
@@ -779,7 +779,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/2/4',
     restSeconds: 90,
-    isAnkleSafe: true,
+
     notes: 'Yates soleus focus - seated targets soleus under gastrocnemius. Heavy 10-12 to failure, not high reps.',
     alternatives: ['Standing Calf Raise', 'Leg Press Calf Press']
   },
@@ -793,8 +793,8 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 150,
-    isAnkleSafe: true,
-    notes: 'Small-gym quad - dumbbell to chest, heels on plates, ankle-safe deep range. No machine needed.',
+
+    notes: 'Small-gym quad - dumbbell to chest, heels on plates, deep range. No machine needed.',
     alternatives: ['Leg Press 45 Degree', 'Hack Squat']
   },
   {
@@ -807,7 +807,7 @@ export const EXERCISE_LIBRARY: ExerciseDefinition[] = [
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 120,
-    isAnkleSafe: true,
+
     notes: 'Small-gym cable curl - low pulley straight bar, constant tension, supinate hard. No Nautilus needed.',
     alternatives: ['EZ-Bar Curl', 'Incline DB Curl']
   },

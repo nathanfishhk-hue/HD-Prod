@@ -9,7 +9,6 @@ export const DEFAULT_USER_PROFILE: UserProfile = {
   bfPercent: 25.0,
   experienceLevel: "Intermediate",
   sessionsPerWeek: 3,
-  ankleMobilityLimited: true,
   dislikesLegsLovesUpper: true,
   goal: "6-Month Heavy Duty Recomp",
   targetCalorieDeficit: 2100, // kcal (~500 deficit)
@@ -92,7 +91,7 @@ export const DEFAULT_DAY_CONFIGS: WorkoutDayConfig[] = [
     dayKey: 'A',
     title: 'DAY A: CHEST & BACK',
     subtitle: 'Torso Destruction & Lat Width',
-    description: 'Pre-exhaust chest with flies before compound incline press. High intensity machine pullover & chest-supported row to spare lower back.',
+    description: 'Pre-exhaust chest with flies before compound incline press. High intensity pullover & chest-supported row.',
     exercises: [
       EXERCISE_LIBRARY.find(e => e.id === 'ex-pec-deck')!,
       EXERCISE_LIBRARY.find(e => e.id === 'ex-incline-press')!,
@@ -103,9 +102,9 @@ export const DEFAULT_DAY_CONFIGS: WorkoutDayConfig[] = [
   },
   {
     dayKey: 'B',
-    title: 'DAY B: LEGS & ABS (ANKLE-SAFE)',
-    subtitle: 'Quads, Hamstrings & Core Without Squats',
-    description: '100% Ankle-Mobility Safe protocol. Pre-exhaust quad extensions followed by heavy leg press/belt squat. Zero conventional squats.',
+    title: 'DAY B: LEGS & ABS',
+    subtitle: 'Quads, Hamstrings & Core',
+    description: 'Pre-exhaust quad extensions followed by heavy leg press. Complete leg destruction.',
     exercises: [
       EXERCISE_LIBRARY.find(e => e.id === 'ex-leg-extension')!,
       EXERCISE_LIBRARY.find(e => e.id === 'ex-leg-press')!,

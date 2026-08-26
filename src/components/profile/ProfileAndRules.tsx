@@ -160,17 +160,6 @@ export const ProfileAndRules: React.FC<ProfileAndRulesProps> = ({ storage }) => 
           ))}
         </div>
 
-        {userProfile.ankleMobilityLimited && (
-          <div className="mt-4 bg-amber-950/40 border border-amber-700/60 rounded-lg p-3 flex items-start gap-2.5 text-xs font-mono-code text-amber-300">
-            <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
-            <div>
-              <strong className="block font-bold text-amber-200 uppercase mb-0.5">
-                ANKLE MOBILITY LIMITATION PROTOCOL ACTIVE ({userProfile.name})
-              </strong>
-              Left ankle dorsiflexion is restricted. Barbell squats removed. Use Pre-Exhaust Leg Extensions, Leg Press / Belt Squats (heel elevated).
-            </div>
-          </div>
-        )}
       </div>
 
       {/* 3. HIT PRINCIPLES */}

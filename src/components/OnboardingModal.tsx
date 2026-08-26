@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, Zap, Activity, Dumbbell, AlertTriangle, CheckCircle2, X } from 'lucide-react';
+import { ShieldCheck, Zap, Activity, Dumbbell, CheckCircle2, X } from 'lucide-react';
 import { UserProfile } from '../types/hit';
 
 interface OnboardingModalProps {
@@ -59,13 +59,6 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ userProfile, o
               </div>
             </div>
 
-            {/* Ankle limitation notice */}
-            <div className="mt-3 bg-amber-950/40 border border-amber-700/60 rounded p-2.5 flex items-start gap-2 text-xs">
-              <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
-              <div>
-                <span className="font-bold text-amber-300">ANKLE MOBILITY LIMITATION ACTIVE:</span> Zero conventional barbell squats. Program uses pre-exhaust leg extensions, leg presses/belt squats, seated leg curls, and standing calf raises to ensure maximal quad growth with zero ankle pain.
-              </div>
-            </div>
           </div>
 
           {/* Core HIT Principles */}

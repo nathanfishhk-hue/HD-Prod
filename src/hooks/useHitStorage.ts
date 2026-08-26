@@ -17,8 +17,8 @@ import {
 import { EXERCISE_LIBRARY as DEFAULT_EXERCISE_LIBRARY } from '../data/exerciseLibrary';
 
 const STORAGE_KEYS = {
-  PROFILES: 'hit_profiles_v3',
-  ACTIVE_ID: 'hit_active_profile_id_v3',
+  PROFILES: 'hit_profiles_v4',
+  ACTIVE_ID: 'hit_active_profile_id_v4',
   PROGRAMS: 'hit_programs_v4',
   ACTIVE_PROGRAM_ID: 'hit_active_program_id_v4',
   EXERCISE_LIBRARY: 'hit_exercise_library_v4',
@@ -47,7 +47,6 @@ const DEFAULT_ROB_PROFILE: UserProfile = {
   bfPercent: 20.0,
   experienceLevel: "Intermediate",
   sessionsPerWeek: 3,
-  ankleMobilityLimited: false,
   dislikesLegsLovesUpper: false,
   goal: "6-Month Heavy Duty Recomp",
   targetCalorieDeficit: 2000,
@@ -72,18 +71,15 @@ function loadProfiles(): { profiles: Record<string, ProfileData>; activeId: stri
     const activeSaved = localStorage.getItem(STORAGE_KEYS.ACTIVE_ID);
     if (saved) {
       const parsed = JSON.parse(saved) as Record<string, ProfileData>;
-      // Nate is ankle-safe only — all other users regular
       if (!parsed['nate']) parsed['nate'] = { id: 'nate', profile: { ...DEFAULT_USER_PROFILE, name: 'Nate' }, workoutLogs: [], bodyStats: DEFAULT_BODY_STATS_NATE };
       if (!parsed['rob']) parsed['rob'] = { id: 'rob', profile: DEFAULT_ROB_PROFILE, workoutLogs: [], bodyStats: DEFAULT_BODY_STATS_ROB };
-      // remove legacy zita if exists
       if ((parsed as any)['zita']) delete (parsed as any)['zita'];
-      // enforce ankle flags: only Nate true
-      parsed['nate'].profile.ankleMobilityLimited = true;
-      if (parsed['rob']) parsed['rob'].profile.ankleMobilityLimited = false;
       parsed['nate'].profile.name = 'Nate';
       parsed['rob'].profile.name = 'Rob';
+      // strip legacy ankle field if present
+      delete (parsed['nate'].profile as any).ankleMobilityLimited;
+      delete (parsed['rob'].profile as any).ankleMobilityLimited;
       const active = activeSaved && parsed[activeSaved] ? activeSaved : 'nate';
-      // if active was zita, fallback to nate
       const safeActive = parsed[active] ? active : 'nate';
       return { profiles: parsed, activeId: safeActive };
     }
@@ -99,7 +95,8 @@ function loadProfiles(): { profiles: Record<string, ProfileData>; activeId: stri
     const s = localStorage.getItem(STORAGE_KEYS.LEGACY_STATS);
     if (s) legacyStats = JSON.parse(s);
   } catch {}
-  const nateProfile = legacyProfile ? { ...legacyProfile, name: 'Nate', ankleMobilityLimited: true } : { ...DEFAULT_USER_PROFILE, name: 'Nate' };
+  const nateProfile = legacyProfile ? { ...legacyProfile, name: 'Nate' } : { ...DEFAULT_USER_PROFILE, name: 'Nate' };
+  delete (nateProfile as any).ankleMobilityLimited;
   const nateStats = legacyStats.length ? legacyStats : DEFAULT_BODY_STATS_NATE;
   return { profiles: { nate: { id: 'nate', profile: nateProfile, workoutLogs: legacyLogs, bodyStats: nateStats }, rob: { id: 'rob', profile: DEFAULT_ROB_PROFILE, workoutLogs: [], bodyStats: DEFAULT_BODY_STATS_ROB } }, activeId: 'nate' };
 }
@@ -142,7 +139,7 @@ function loadPrograms(): { programs: Record<string, ProgramConfig>; activeProgra
   const defaultProgram: ProgramConfig = {
     id: 'hd-recomp-6wk',
     name: 'HD RECOMP 6-WK',
-    description: 'Original Heavy Duty Recomp - Chest/Back, Legs-AnkleSafe, Shoulders/Arms - 6 week wave. Do not edit if you want to preserve.',
+    description: 'Original Heavy Duty Recomp - Chest/Back, Legs, Shoulders/Arms - 6 week wave.',
     weeks: DEFAULT_WEEK_PHASES,
     days: DEFAULT_DAY_CONFIGS,
     createdAt: new Date().toISOString(),
@@ -403,7 +400,7 @@ export function useHitStorage() {
   const resetToDefaults = useCallback(() => {
     if (confirm('Reset ALL profiles, programs, library? This wipes everything.')) {
       const freshProfiles: Record<string, ProfileData> = {
-        nate: { id: 'nate', profile: { ...DEFAULT_USER_PROFILE, name: 'Nate', ankleMobilityLimited: true }, workoutLogs: [], bodyStats: [{ id: 'stat-1', date: new Date().toISOString().split('T')[0], weightKg: 100, waistCm: 94.5, bfPercent: 25, proteinIntakeG: 210, creatineTaken: true, sleepHours: 7, notes: 'Reset.' }] },
+        nate: { id: 'nate', profile: { ...DEFAULT_USER_PROFILE, name: 'Nate' }, workoutLogs: [], bodyStats: [{ id: 'stat-1', date: new Date().toISOString().split('T')[0], weightKg: 100, waistCm: 94.5, bfPercent: 25, proteinIntakeG: 210, creatineTaken: true, sleepHours: 7, notes: 'Reset.' }] },
         rob: { id: 'rob', profile: DEFAULT_ROB_PROFILE, workoutLogs: [], bodyStats: [{ id: 'rob-stat-1', date: new Date().toISOString().split('T')[0], weightKg: 92, waistCm: 91, bfPercent: 20, proteinIntakeG: 185, creatineTaken: true, sleepHours: 7, notes: 'Reset.' }] }
       };
       const defProg: ProgramConfig = { id: 'hd-recomp-6wk', name: 'HD RECOMP 6-WK', description: 'Original Heavy Duty Recomp.', weeks: DEFAULT_WEEK_PHASES, days: DEFAULT_DAY_CONFIGS, createdAt: new Date().toISOString(), isDefault: true };
