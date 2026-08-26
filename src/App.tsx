@@ -4,6 +4,7 @@ import { Header } from './components/Header';
 import { Navigation, TabType } from './components/Navigation';
 import { WorkoutRunner } from './components/workout/WorkoutRunner';
 import { ProgramBuilder } from './components/builder/ProgramBuilder';
+import { FloatingAIChat } from './components/ai/FloatingAIChat';
 import { OverloadAndStats } from './components/stats/OverloadAndStats';
 import { HistoryAndAnalytics } from './components/history/HistoryAndAnalytics';
 import { ProfileAndRules } from './components/profile/ProfileAndRules';
@@ -44,6 +45,7 @@ export function App() {
         {activeTab === 'history' && <HistoryAndAnalytics storage={storage} />}
         {activeTab === 'profile' && <ProfileAndRules storage={storage} />}
       </main>
+      {(activeTab === 'runner' || activeTab === 'builder') && <FloatingAIChat storage={storage} />}
       <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
       {showOnboarding && (
         <OnboardingModal
