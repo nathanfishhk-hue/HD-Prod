@@ -56,11 +56,15 @@ export const WorkoutRunner: React.FC<WorkoutRunnerProps> = ({ storage }) => {
   const [selectedWeekNum, setSelectedWeekNum] = useState<number>(1);
   const [selectedDayKey, setSelectedDayKey] = useState<string>('A');
   const [activeExerciseIndex, setActiveExerciseIndex] = useState<number>(0);
+  // Runner-local cycle override - preview only, never mutates program or adds tabs
+  const [runnerCycleOverride, setRunnerCycleOverride] = useState<Record<string, ExerciseDefinition>>({});
 
   // Active workout state
   const currentWeek = weeks.find(w => w.weekNumber === selectedWeekNum) || weeks[0];
   const currentDay = days.find(d => d.dayKey === selectedDayKey) || days[0];
-  const currentExercise = currentDay?.exercises[activeExerciseIndex] || currentDay?.exercises[0];
+  const baseExercise = currentDay?.exercises[activeExerciseIndex] || currentDay?.exercises[0];
+  const overrideKey = `${selectedDayKey}-${activeExerciseIndex}`;
+  const currentExercise = runnerCycleOverride[overrideKey] || baseExercise;
 
   // Working inputs state for active exercise
   const [warmupWeights, setWarmupWeights] = useState<number[]>([]);
@@ -285,13 +289,20 @@ export const WorkoutRunner: React.FC<WorkoutRunnerProps> = ({ storage }) => {
 
   const similarPool = exerciseLibrary.filter(e => e.muscleGroup === currentExercise.muscleGroup);
   const handleCycleSimilar = () => {
-    if (editModeLocked) { alert('Unlock editing (header LOCKED → EDITING) to cycle exercises.'); return; }
     if (similarPool.length <= 1) return;
     const curIdx = similarPool.findIndex(e => e.id === currentExercise.id);
     const next = similarPool[(curIdx + 1) % similarPool.length];
-    // swap in active program day
-    swapExercise(currentDay.dayKey, activeExerciseIndex, next);
+    // Runner preview only - replaces display for this slot, wraps to start, never adds tab or mutates program
+    setRunnerCycleOverride(prev => ({ ...prev, [overrideKey]: next }));
   };
+  const handleResetCycle = () => {
+    setRunnerCycleOverride(prev => { const n = { ...prev }; delete n[overrideKey]; return n; });
+  };
+
+  // Clear overrides when switching day/week/index
+  useEffect(() => {
+    // keep overrides but they are keyed by day-index so switching is isolated
+  }, [selectedDayKey, activeExerciseIndex]);
 
   return (
     <div className="pb-28 max-w-4xl mx-auto px-3 sm:px-4 pt-3 overflow-x-hidden">
@@ -412,6 +423,7 @@ export const WorkoutRunner: React.FC<WorkoutRunnerProps> = ({ storage }) => {
               <h2 className="font-bebas text-xl sm:text-3xl text-zinc-100 tracking-wider leading-none break-words">
                 {currentExercise.name}
               </h2>
+              {runnerCycleOverride[overrideKey] && <span className="px-1.5 py-0.5 rounded text-[10px] font-mono-code bg-sky-950 border border-sky-800 text-sky-300">PREVIEW</span>}
               {currentExercise.isAnkleSafe && (
                 <span className="px-2 py-0.5 rounded text-[10px] font-mono-code font-bold bg-emerald-950 text-emerald-400 border border-emerald-800 flex items-center gap-1 flex-shrink-0">
                   <CheckCircle2 className="w-3 h-3" />
@@ -425,11 +437,14 @@ export const WorkoutRunner: React.FC<WorkoutRunnerProps> = ({ storage }) => {
           </div>
 
           <div className="flex items-center gap-2 flex-shrink-0 self-start sm:self-center">
+            {runnerCycleOverride[overrideKey] && (
+              <button onClick={handleResetCycle} className="px-2 py-1.5 bg-zinc-800 border border-zinc-700 rounded text-[11px] font-mono-code text-zinc-400 hover:text-zinc-200">RESET</button>
+            )}
             <button
               onClick={handleCycleSimilar}
               disabled={similarPool.length <= 1}
-              className={`flex items-center gap-1 px-2.5 py-1.5 rounded text-xs font-mono-code font-bold border transition flex-shrink-0 ${editModeLocked ? 'bg-zinc-900 border-zinc-800 text-zinc-500 opacity-60' : 'bg-sky-950/60 border-sky-800 text-sky-300 hover:bg-sky-900 hover:border-sky-700'}`}
-              title={editModeLocked ? 'Unlock editing to cycle' : `Cycle similar: ${currentExercise.muscleGroup} (${similarPool.length} options)`}
+              className={`flex items-center gap-1 px-2.5 py-1.5 rounded text-xs font-mono-code font-bold border transition flex-shrink-0 ${similarPool.length<=1 ? 'bg-zinc-900 border-zinc-800 text-zinc-500 opacity-60' : 'bg-sky-950/60 border-sky-800 text-sky-300 hover:bg-sky-900 hover:border-sky-700'}`}
+              title={`Cycle similar: ${currentExercise.muscleGroup} (${similarPool.length} options) - wraps to start, preview only`}
             >
               <RefreshCw className="w-3.5 h-3.5" />
               <span className="hidden xs:inline">CYCLE</span>
