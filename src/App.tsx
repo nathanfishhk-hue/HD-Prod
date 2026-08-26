@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useHitStorage } from './hooks/useHitStorage';
+import { useAuth } from './hooks/useAuth';
 import { Header } from './components/Header';
 import { Navigation, TabType } from './components/Navigation';
 import { WorkoutRunner } from './components/workout/WorkoutRunner';
@@ -9,19 +10,24 @@ import { OverloadAndStats } from './components/stats/OverloadAndStats';
 import { HistoryAndAnalytics } from './components/history/HistoryAndAnalytics';
 import { ProfileAndRules } from './components/profile/ProfileAndRules';
 import { OnboardingModal } from './components/OnboardingModal';
+import { SignInPage } from './components/auth/SignInPage';
 
 export function App() {
-  const storage = useHitStorage();
+  const { user } = useAuth();
+  const storage = useHitStorage(user ? { id: user.id, name: user.name } : null);
   const [activeTab, setActiveTab] = useState<TabType>('runner');
   const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
 
   useEffect(() => {
+    if (!user) return;
     const hasSeenOnboarding = localStorage.getItem('hit_seen_onboarding_v2');
     if (!hasSeenOnboarding) {
       setShowOnboarding(true);
       localStorage.setItem('hit_seen_onboarding_v2', 'true');
     }
-  }, []);
+  }, [user]);
+
+  if (!user) return <SignInPage />;
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col font-sans selection:bg-red-600 selection:text-white">

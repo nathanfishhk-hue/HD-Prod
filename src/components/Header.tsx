@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Lock, Unlock, Volume2, VolumeX, Download } from 'lucide-react';
+import { Lock, Unlock, Volume2, VolumeX, Download, LogOut } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
 import { WeightUnit } from '../types/hit';
 
 interface HeaderProps {
@@ -29,6 +30,7 @@ export const Header: React.FC<HeaderProps> = ({
   activeProfileId,
   switchProfile
 }) => {
+  const { user, signOut } = useAuth();
   const [deferredInstallPrompt, setDeferredInstallPrompt] = useState<unknown>(null);
   const [isStandalone, setIsStandalone] = useState(false);
 
@@ -150,10 +152,11 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={onOpenProfile}
             className="flex items-center gap-1 bg-zinc-900 border border-zinc-800 hover:border-red-900/80 px-1.5 sm:px-2 py-1 rounded text-[11px] sm:text-xs font-mono-code font-medium text-zinc-300 transition flex-shrink-0 max-w-[90px] sm:max-w-none"
           >
-            <div className={`w-2 h-2 rounded-full ${activeProfileId === 'nate' ? 'bg-red-500' : 'bg-sky-500'} animate-pulse flex-shrink-0`} />
-            <span className="hidden sm:inline truncate">{active?.profile.weightKg}kg • {active?.profile.bfPercent}% BF</span>
-            <span className="sm:hidden truncate">{active?.profile.name.toUpperCase().slice(0,4)}</span>
+            {user?.avatar ? <img src={user.avatar} alt="" className="w-5 h-5 rounded-full" /> : <div className={`w-2 h-2 rounded-full ${activeProfileId === 'nate' ? 'bg-red-500' : 'bg-sky-500'} animate-pulse flex-shrink-0`} />}
+            <span className="hidden sm:inline truncate">{user?.name?.split(' ')[0] || active?.profile.name} • {active?.profile.weightKg}kg</span>
+            <span className="sm:hidden truncate">{(user?.name || active?.profile.name).toUpperCase().slice(0,4)}</span>
           </button>
+          <button onClick={signOut} className="p-1.5 bg-zinc-900 border border-zinc-800 rounded text-zinc-500 hover:text-red-400" title="Sign out"><LogOut className="w-4 h-4" /></button>
         </div>
       </div>
     </header>

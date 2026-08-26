@@ -16,7 +16,7 @@ import {
 } from '../data/defaultProgram';
 import { EXERCISE_LIBRARY as DEFAULT_EXERCISE_LIBRARY } from '../data/exerciseLibrary';
 
-const STORAGE_KEYS = {
+const BASE_KEYS = {
   PROFILES: 'hit_profiles_v4',
   ACTIVE_ID: 'hit_active_profile_id_v4',
   PROGRAMS: 'hit_programs_v4',
@@ -31,6 +31,26 @@ const STORAGE_KEYS = {
   LEGACY_WEEK_PHASES: 'hit_week_phases_v2',
   LEGACY_DAY_CONFIGS: 'hit_day_configs_v2',
 };
+
+function keysFor(userId?: string | null) {
+  if (!userId) return BASE_KEYS;
+  const s = '_' + userId.replace(/[^a-z0-9_-]/gi, '_');
+  return {
+    PROFILES: BASE_KEYS.PROFILES + s,
+    ACTIVE_ID: BASE_KEYS.ACTIVE_ID + s,
+    PROGRAMS: BASE_KEYS.PROGRAMS + s,
+    ACTIVE_PROGRAM_ID: BASE_KEYS.ACTIVE_PROGRAM_ID + s,
+    EXERCISE_LIBRARY: BASE_KEYS.EXERCISE_LIBRARY + s,
+    UNIT_PREF: BASE_KEYS.UNIT_PREF + s,
+    EDIT_LOCKED: BASE_KEYS.EDIT_LOCKED + s,
+    SOUND_ENABLED: BASE_KEYS.SOUND_ENABLED + s,
+    LEGACY_PROFILE: BASE_KEYS.LEGACY_PROFILE,
+    LEGACY_LOGS: BASE_KEYS.LEGACY_LOGS,
+    LEGACY_STATS: BASE_KEYS.LEGACY_STATS,
+    LEGACY_WEEK_PHASES: BASE_KEYS.LEGACY_WEEK_PHASES,
+    LEGACY_DAY_CONFIGS: BASE_KEYS.LEGACY_DAY_CONFIGS,
+  };
+}
 
 export interface ProfileData {
   id: string;
@@ -65,12 +85,23 @@ const DEFAULT_BODY_STATS_NATE: BodyStatEntry[] = [
   { id: 'stat-3', date: new Date().toISOString().split('T')[0], weightKg: 100.0, waistCm: 94.5, bfPercent: 25.0, proteinIntakeG: 210, creatineTaken: true, sleepHours: 7.0, notes: 'Current baseline.' }
 ];
 
-function loadProfiles(): { profiles: Record<string, ProfileData>; activeId: string } {
+function loadProfiles(STORAGE_KEYS: ReturnType<typeof keysFor>, authName?: string, userId?: string): { profiles: Record<string, ProfileData>; activeId: string } {
   try {
     const saved = localStorage.getItem(STORAGE_KEYS.PROFILES);
     const activeSaved = localStorage.getItem(STORAGE_KEYS.ACTIVE_ID);
     if (saved) {
       const parsed = JSON.parse(saved) as Record<string, ProfileData>;
+      // per-user mode: ensure single self profile exists
+      if (userId) {
+        if (!parsed[userId]) parsed[userId] = { id: userId, profile: { ...DEFAULT_USER_PROFILE, name: authName || 'Lifter' }, workoutLogs: [], bodyStats: DEFAULT_BODY_STATS_NATE };
+        // clean legacy demo ids in per-user store
+        if ((parsed as any)['nate']) delete (parsed as any)['nate'];
+        if ((parsed as any)['rob']) delete (parsed as any)['rob'];
+        if ((parsed as any)['zita']) delete (parsed as any)['zita'];
+        parsed[userId].profile.name = authName || parsed[userId].profile.name;
+        delete (parsed[userId].profile as any).ankleMobilityLimited;
+        return { profiles: parsed, activeId: userId };
+      }
       if (!parsed['nate']) parsed['nate'] = { id: 'nate', profile: { ...DEFAULT_USER_PROFILE, name: 'Nate' }, workoutLogs: [], bodyStats: DEFAULT_BODY_STATS_NATE };
       if (!parsed['rob']) parsed['rob'] = { id: 'rob', profile: DEFAULT_ROB_PROFILE, workoutLogs: [], bodyStats: DEFAULT_BODY_STATS_ROB };
       if ((parsed as any)['zita']) delete (parsed as any)['zita'];
@@ -84,6 +115,12 @@ function loadProfiles(): { profiles: Record<string, ProfileData>; activeId: stri
       return { profiles: parsed, activeId: safeActive };
     }
   } catch {}
+  // no saved — create fresh
+  if (userId) {
+    const p: UserProfile = { ...DEFAULT_USER_PROFILE, name: authName || 'Lifter' };
+    delete (p as any).ankleMobilityLimited;
+    return { profiles: { [userId]: { id: userId, profile: p, workoutLogs: [], bodyStats: DEFAULT_BODY_STATS_NATE } }, activeId: userId };
+  }
   let legacyProfile: UserProfile | null = null;
   let legacyLogs: LoggedWorkout[] = [];
   let legacyStats: BodyStatEntry[] = [];
@@ -101,7 +138,7 @@ function loadProfiles(): { profiles: Record<string, ProfileData>; activeId: stri
   return { profiles: { nate: { id: 'nate', profile: nateProfile, workoutLogs: legacyLogs, bodyStats: nateStats }, rob: { id: 'rob', profile: DEFAULT_ROB_PROFILE, workoutLogs: [], bodyStats: DEFAULT_BODY_STATS_ROB } }, activeId: 'nate' };
 }
 
-function loadExerciseLibrary(): ExerciseDefinition[] {
+function loadExerciseLibrary(STORAGE_KEYS: ReturnType<typeof keysFor>): ExerciseDefinition[] {
   try {
     const saved = localStorage.getItem(STORAGE_KEYS.EXERCISE_LIBRARY);
     if (saved) {
@@ -135,7 +172,7 @@ function loadExerciseLibrary(): ExerciseDefinition[] {
   return DEFAULT_EXERCISE_LIBRARY;
 }
 
-function loadPrograms(): { programs: Record<string, ProgramConfig>; activeProgramId: string } {
+function loadPrograms(STORAGE_KEYS: ReturnType<typeof keysFor>): { programs: Record<string, ProgramConfig>; activeProgramId: string } {
   const defaultProgram: ProgramConfig = {
     id: 'hd-recomp-6wk',
     name: 'HD RECOMP 6-WK',
@@ -183,31 +220,34 @@ function loadPrograms(): { programs: Record<string, ProgramConfig>; activeProgra
   return { programs: { 'hd-recomp-6wk': migratedDefault }, activeProgramId: 'hd-recomp-6wk' };
 }
 
-export function useHitStorage() {
-  const [{ profiles: initialProfiles, activeId: initialActive }] = useState(() => loadProfiles());
+export function useHitStorage(authUser?: { id: string; name: string } | null) {
+  const userId = authUser?.id || null;
+  const authName = authUser?.name || undefined;
+  const SK = keysFor(userId);
+  const [{ profiles: initialProfiles, activeId: initialActive }] = useState(() => loadProfiles(SK, authName, userId || undefined));
   const [profiles, setProfiles] = useState<Record<string, ProfileData>>(initialProfiles);
   const [activeProfileId, setActiveProfileId] = useState<string>(initialActive);
 
-  const [{ programs: initialPrograms, activeProgramId: initialProgId }] = useState(() => loadPrograms());
+  const [{ programs: initialPrograms, activeProgramId: initialProgId }] = useState(() => loadPrograms(SK));
   const [programs, setPrograms] = useState<Record<string, ProgramConfig>>(initialPrograms);
   const [activeProgramId, setActiveProgramId] = useState<string>(initialProgId);
 
-  const [exerciseLibrary, setExerciseLibrary] = useState<ExerciseDefinition[]>(() => loadExerciseLibrary());
+  const [exerciseLibrary, setExerciseLibrary] = useState<ExerciseDefinition[]>(() => loadExerciseLibrary(SK));
 
   const [unitPreference, setUnitPreferenceState] = useState<WeightUnit>(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.UNIT_PREF);
+    const saved = localStorage.getItem(SK.UNIT_PREF);
     return saved === 'lbs' ? 'lbs' : 'kg';
   });
   const [editModeLocked, setEditModeLockedState] = useState<boolean>(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.EDIT_LOCKED);
+    const saved = localStorage.getItem(SK.EDIT_LOCKED);
     return saved !== null ? JSON.parse(saved) : true;
   });
   const [soundEnabled, setSoundEnabledState] = useState<boolean>(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.SOUND_ENABLED);
+    const saved = localStorage.getItem(SK.SOUND_ENABLED);
     return saved !== null ? JSON.parse(saved) : true;
   });
 
-  const activeData = profiles[activeProfileId] || profiles['nate'];
+  const activeData = profiles[activeProfileId] || Object.values(profiles)[0];
   const userProfile = activeData.profile;
   const workoutLogs = activeData.workoutLogs;
   const bodyStats = activeData.bodyStats;
@@ -216,15 +256,27 @@ export function useHitStorage() {
   const weeks = activeProgram.weeks;
   const days = activeProgram.days;
 
+  // Remount when user changes — reload namespaced storage
+  useEffect(() => {
+    const p = loadProfiles(SK, authName, userId || undefined);
+    setProfiles(p.profiles); setActiveProfileId(p.activeId);
+    const pr = loadPrograms(SK);
+    setPrograms(pr.programs); setActiveProgramId(pr.activeProgramId);
+    setExerciseLibrary(loadExerciseLibrary(SK));
+    const up = localStorage.getItem(SK.UNIT_PREF); setUnitPreferenceState(up === 'lbs' ? 'lbs' : 'kg');
+    const el = localStorage.getItem(SK.EDIT_LOCKED); setEditModeLockedState(el !== null ? JSON.parse(el) : true);
+    const se = localStorage.getItem(SK.SOUND_ENABLED); setSoundEnabledState(se !== null ? JSON.parse(se) : true);
+  }, [userId]);
+
   // Persist
-  useEffect(() => { localStorage.setItem(STORAGE_KEYS.PROFILES, JSON.stringify(profiles)); }, [profiles]);
-  useEffect(() => { localStorage.setItem(STORAGE_KEYS.ACTIVE_ID, activeProfileId); }, [activeProfileId]);
-  useEffect(() => { localStorage.setItem(STORAGE_KEYS.PROGRAMS, JSON.stringify(programs)); }, [programs]);
-  useEffect(() => { localStorage.setItem(STORAGE_KEYS.ACTIVE_PROGRAM_ID, activeProgramId); }, [activeProgramId]);
-  useEffect(() => { localStorage.setItem(STORAGE_KEYS.EXERCISE_LIBRARY, JSON.stringify(exerciseLibrary)); }, [exerciseLibrary]);
-  useEffect(() => { localStorage.setItem(STORAGE_KEYS.UNIT_PREF, unitPreference); }, [unitPreference]);
-  useEffect(() => { localStorage.setItem(STORAGE_KEYS.EDIT_LOCKED, JSON.stringify(editModeLocked)); }, [editModeLocked]);
-  useEffect(() => { localStorage.setItem(STORAGE_KEYS.SOUND_ENABLED, JSON.stringify(soundEnabled)); }, [soundEnabled]);
+  useEffect(() => { localStorage.setItem(SK.PROFILES, JSON.stringify(profiles)); }, [profiles, SK.PROFILES]);
+  useEffect(() => { localStorage.setItem(SK.ACTIVE_ID, activeProfileId); }, [activeProfileId, SK.ACTIVE_ID]);
+  useEffect(() => { localStorage.setItem(SK.PROGRAMS, JSON.stringify(programs)); }, [programs, SK.PROGRAMS]);
+  useEffect(() => { localStorage.setItem(SK.ACTIVE_PROGRAM_ID, activeProgramId); }, [activeProgramId, SK.ACTIVE_PROGRAM_ID]);
+  useEffect(() => { localStorage.setItem(SK.EXERCISE_LIBRARY, JSON.stringify(exerciseLibrary)); }, [exerciseLibrary, SK.EXERCISE_LIBRARY]);
+  useEffect(() => { localStorage.setItem(SK.UNIT_PREF, unitPreference); }, [unitPreference, SK.UNIT_PREF]);
+  useEffect(() => { localStorage.setItem(SK.EDIT_LOCKED, JSON.stringify(editModeLocked)); }, [editModeLocked, SK.EDIT_LOCKED]);
+  useEffect(() => { localStorage.setItem(SK.SOUND_ENABLED, JSON.stringify(soundEnabled)); }, [soundEnabled, SK.SOUND_ENABLED]);
 
   // helpers to update active program's days/weeks immutably
   const updateActiveProgram = useCallback((updater: (p: ProgramConfig) => ProgramConfig) => {
