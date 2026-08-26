@@ -424,12 +424,6 @@ export const WorkoutRunner: React.FC<WorkoutRunnerProps> = ({ storage }) => {
                 {currentExercise.name}
               </h2>
               {runnerCycleOverride[overrideKey] && <span className="px-1.5 py-0.5 rounded text-[10px] font-mono-code bg-sky-950 border border-sky-800 text-sky-300">PREVIEW</span>}
-              {currentExercise.isAnkleSafe && (
-                <span className="px-2 py-0.5 rounded text-[10px] font-mono-code font-bold bg-emerald-950 text-emerald-400 border border-emerald-800 flex items-center gap-1 flex-shrink-0">
-                  <CheckCircle2 className="w-3 h-3" />
-                  ANKLE SAFE
-                </span>
-              )}
             </div>
             <p className="text-xs font-mono-code text-zinc-400 mt-1 break-words">
               TEMPO: <strong className="text-red-400">{currentExercise.tempo}</strong> (3s concentric / 1s pause / 4s negative) • REST: <strong>{currentExercise.restSeconds}s</strong>

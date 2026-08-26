@@ -79,7 +79,6 @@ export const ProgramBuilder: React.FC<ProgramBuilderProps> = ({ storage }) => {
     defaultWorkingSets: 1,
     tempo: '3/1/4',
     restSeconds: 120,
-    isAnkleSafe: true,
     notes: '',
     alternatives: []
   });
@@ -108,7 +107,7 @@ export const ProgramBuilder: React.FC<ProgramBuilderProps> = ({ storage }) => {
     const id = 'ex-' + newExForm.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now().toString(36).slice(0,3);
     addExerciseToLibrary({ ...newExForm, id });
     setShowAddLibModal(false);
-    setNewExForm({ id: '', name: '', muscleGroup: 'Chest', targetRepsMin: 6, targetRepsMax: 10, defaultWarmups: 1, defaultWorkingSets: 1, tempo: '3/1/4', restSeconds: 120, isAnkleSafe: true, notes: '', alternatives: [] });
+    setNewExForm({ id: '', name: '', muscleGroup: 'Chest', targetRepsMin: 6, targetRepsMax: 10, defaultWarmups: 1, defaultWorkingSets: 1, tempo: '3/1/4', restSeconds: 120, notes: '', alternatives: [] });
   };
 
   const startEditLib = (ex: ExerciseDefinition) => {

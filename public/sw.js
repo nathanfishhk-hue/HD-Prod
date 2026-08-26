@@ -1,4 +1,4 @@
-const CACHE_NAME = 'heavy-duty-hit-v4-cycle-preview';
+const CACHE_NAME = 'heavy-duty-hit-v5-login';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
