@@ -310,6 +310,19 @@ export const ProgramBuilder: React.FC<ProgramBuilderProps> = ({ storage }) => {
                 </div>
                 {!editModeLocked && (
                   <div className="flex items-center gap-1 flex-wrap sm:flex-nowrap w-full sm:w-auto">
+                    <button
+                      onClick={() => {
+                        const pool = exerciseLibrary.filter(e => e.muscleGroup === ex.muscleGroup);
+                        if (pool.length <= 1) return;
+                        const cur = pool.findIndex(p => p.id === ex.id);
+                        const nxt = pool[(cur + 1) % pool.length];
+                        swapExercise(activeDayKey, idx, nxt);
+                      }}
+                      className="p-1.5 sm:px-2 sm:py-1.5 bg-sky-950/60 border border-sky-800 hover:bg-sky-900 text-sky-300 rounded flex items-center gap-1 font-mono-code text-[11px] font-bold"
+                      title={`Cycle similar ${ex.muscleGroup} (${exerciseLibrary.filter(e=>e.muscleGroup===ex.muscleGroup).length})`}
+                    >
+                      <RefreshCw className="w-3.5 h-3.5" /> <span className="hidden sm:inline">CYCLE</span>
+                    </button>
                     <select value={ex.id} onChange={e => { const found = exerciseLibrary.find(x=>x.id===e.target.value); if(found) swapExercise(activeDayKey, idx, found); }} className="flex-1 sm:flex-none bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-xs font-mono-code text-zinc-300 min-w-0 sm:max-w-[180px]">
                       <option value={ex.id}>SWAP...</option>
                       {exerciseLibrary.map(lib => <option key={lib.id} value={lib.id}>{lib.name} ({lib.muscleGroup})</option>)}

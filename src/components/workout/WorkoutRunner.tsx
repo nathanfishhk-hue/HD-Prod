@@ -13,7 +13,8 @@ import {
   ArrowRight,
   Activity,
   Zap,
-  Info
+  Info,
+  RefreshCw
 } from 'lucide-react';
 import {
   LoggedWorkout,
@@ -46,7 +47,10 @@ export const WorkoutRunner: React.FC<WorkoutRunnerProps> = ({ storage }) => {
     logWorkoutSession,
     getExerciseHistory,
     unitPreference,
-    soundEnabled
+    soundEnabled,
+    exerciseLibrary,
+    swapExercise,
+    editModeLocked
   } = storage;
 
   const [selectedWeekNum, setSelectedWeekNum] = useState<number>(1);
@@ -279,6 +283,16 @@ export const WorkoutRunner: React.FC<WorkoutRunnerProps> = ({ storage }) => {
 
   const isCurrentLogged = !!loggedExerciseMap[currentExercise.id];
 
+  const similarPool = exerciseLibrary.filter(e => e.muscleGroup === currentExercise.muscleGroup);
+  const handleCycleSimilar = () => {
+    if (editModeLocked) { alert('Unlock editing (header LOCKED → EDITING) to cycle exercises.'); return; }
+    if (similarPool.length <= 1) return;
+    const curIdx = similarPool.findIndex(e => e.id === currentExercise.id);
+    const next = similarPool[(curIdx + 1) % similarPool.length];
+    // swap in active program day
+    swapExercise(currentDay.dayKey, activeExerciseIndex, next);
+  };
+
   return (
     <div className="pb-28 max-w-4xl mx-auto px-3 sm:px-4 pt-3 overflow-x-hidden">
       {/* 1. WEEK & DAY SELECTOR HEADER */}
@@ -411,6 +425,16 @@ export const WorkoutRunner: React.FC<WorkoutRunnerProps> = ({ storage }) => {
           </div>
 
           <div className="flex items-center gap-2 flex-shrink-0 self-start sm:self-center">
+            <button
+              onClick={handleCycleSimilar}
+              disabled={similarPool.length <= 1}
+              className={`flex items-center gap-1 px-2.5 py-1.5 rounded text-xs font-mono-code font-bold border transition flex-shrink-0 ${editModeLocked ? 'bg-zinc-900 border-zinc-800 text-zinc-500 opacity-60' : 'bg-sky-950/60 border-sky-800 text-sky-300 hover:bg-sky-900 hover:border-sky-700'}`}
+              title={editModeLocked ? 'Unlock editing to cycle' : `Cycle similar: ${currentExercise.muscleGroup} (${similarPool.length} options)`}
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span className="hidden xs:inline">CYCLE</span>
+              <span className="xs:hidden">↻</span>
+            </button>
             <button
               onClick={() => setShowPlateCalc(true)}
               className="flex items-center gap-1 px-2.5 py-1.5 bg-zinc-900 border border-zinc-700 hover:border-red-600 rounded text-xs font-mono-code text-zinc-200 transition flex-shrink-0"
