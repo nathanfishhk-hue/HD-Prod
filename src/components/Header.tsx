@@ -150,7 +150,7 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={onOpenProfile}
             className="flex items-center gap-1 bg-zinc-900 border border-zinc-800 hover:border-red-900/80 px-1.5 sm:px-2 py-1 rounded text-[11px] sm:text-xs font-mono-code font-medium text-zinc-300 transition flex-shrink-0 max-w-[90px] sm:max-w-none"
           >
-            <div className={`w-2 h-2 rounded-full ${activeProfileId === 'nate' ? 'bg-red-500' : activeProfileId === 'zita' ? 'bg-fuchsia-500' : 'bg-sky-500'} animate-pulse flex-shrink-0`} />
+            <div className={`w-2 h-2 rounded-full ${activeProfileId === 'nate' ? 'bg-red-500' : 'bg-sky-500'} animate-pulse flex-shrink-0`} />
             <span className="hidden sm:inline truncate">{active?.profile.weightKg}kg • {active?.profile.bfPercent}% BF</span>
             <span className="sm:hidden truncate">{active?.profile.name.toUpperCase().slice(0,4)}</span>
           </button>
