@@ -27,7 +27,10 @@ export function App() {
     }
   }, [user]);
 
-  if (!user) return <SignInPage />;
+  if (!user) {
+    // AUTH_DISABLED for dev — bypass gate, remove this to re-enable
+    // return <SignInPage />;
+  }
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col font-sans selection:bg-red-600 selection:text-white">
