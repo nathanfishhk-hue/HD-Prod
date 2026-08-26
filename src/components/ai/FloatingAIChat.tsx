@@ -11,17 +11,15 @@ interface ParsedProgram { name: string; description: string; days: { title: stri
 type Slots = {
   goal: string;
   days: number;
-  ankleSafe: boolean | null;
   experience: string;
   loves: string;
   hates: string;
 };
 
-const DEFAULT_SLOTS: Slots = { goal: '', days: 3, ankleSafe: null, experience: 'Intermediate', loves: '', hates: '' };
+const DEFAULT_SLOTS: Slots = { goal: '', days: 3, experience: 'Intermediate', loves: '', hates: '' };
 
-function pickExercises(muscle: string, count: number, ankleSafe: boolean, exclude: Set<string>): ExerciseDefinition[] {
+function pickExercises(muscle: string, count: number, exclude: Set<string>): ExerciseDefinition[] {
   let pool = EXERCISE_LIBRARY.filter(e => e.muscleGroup === muscle);
-  if (ankleSafe && muscle === 'Legs') pool = pool.filter(e => e.isAnkleSafe);
   pool = pool.filter(e => !exclude.has(e.name));
   // shuffle lightly stable
   const shuffled = [...pool].sort(() => Math.random() - 0.5);
@@ -29,7 +27,6 @@ function pickExercises(muscle: string, count: number, ankleSafe: boolean, exclud
 }
 
 function buildFreeProgram(slots: Slots, nameOverride?: string): ParsedProgram {
-  const safe = slots.ankleSafe === true;
   const d = slots.days;
   const goal = (slots.goal || 'recomp').toLowerCase();
   const hatesLegs = slots.hates.toLowerCase().includes('leg') || goal.includes('upper');
@@ -41,51 +38,51 @@ function buildFreeProgram(slots: Slots, nameOverride?: string): ParsedProgram {
 
   if (d === 3) {
     const chestCount = lovesChest ? 3 : 2;
-    const chestEx = pickExercises('Chest', chestCount, safe, exclude); chestEx.forEach(e=>exclude.add(e.name));
-    const backEx = pickExercises('Lats/Back', 2, safe, exclude); backEx.forEach(e=>exclude.add(e.name));
+    const chestEx = pickExercises('Chest', chestCount, exclude); chestEx.forEach(e=>exclude.add(e.name));
+    const backEx = pickExercises('Lats/Back', 2, exclude); backEx.forEach(e=>exclude.add(e.name));
     days.push({ title: `DAY ${titleFor(0)}: CHEST & BACK`, description: 'Pre-exhaust + compounds HIT 3/1/4', exerciseNames: [...chestEx, ...backEx].map(e=>e.name) });
 
     const legN = hatesLegs ? 3 : 4;
-    const legEx = pickExercises('Legs', legN, safe, exclude); legEx.forEach(e=>exclude.add(e.name));
-    const absEx = pickExercises('Abs', 1, safe, exclude); absEx.forEach(e=>exclude.add(e.name));
-    days.push({ title: `DAY ${titleFor(1)}: LEGS & ABS${safe ? ' (ANKLE-SAFE)' : ''}`, description: safe ? 'No conventional squats, belt/leg press focus' : 'HIT legs', exerciseNames: [...legEx, ...absEx].map(e=>e.name) });
+    const legEx = pickExercises('Legs', legN, exclude); legEx.forEach(e=>exclude.add(e.name));
+    const absEx = pickExercises('Abs', 1, exclude); absEx.forEach(e=>exclude.add(e.name));
+    days.push({ title: `DAY ${titleFor(1)}: LEGS & ABS`, description: 'HIT legs', exerciseNames: [...legEx, ...absEx].map(e=>e.name) });
 
-    const shEx = pickExercises('Shoulders', 2, safe, exclude); shEx.forEach(e=>exclude.add(e.name));
-    const biEx = pickExercises('Biceps', 1, safe, exclude); biEx.forEach(e=>exclude.add(e.name));
-    const triEx = pickExercises('Triceps', 1, safe, exclude); triEx.forEach(e=>exclude.add(e.name));
+    const shEx = pickExercises('Shoulders', 2, exclude); shEx.forEach(e=>exclude.add(e.name));
+    const biEx = pickExercises('Biceps', 1, exclude); biEx.forEach(e=>exclude.add(e.name));
+    const triEx = pickExercises('Triceps', 1, exclude); triEx.forEach(e=>exclude.add(e.name));
     days.push({ title: `DAY ${titleFor(2)}: SHOULDERS & ARMS`, description: 'Delts + arms to failure', exerciseNames: [...shEx, ...biEx, ...triEx].map(e=>e.name) });
   } else if (d === 4) {
-    const a = pickExercises('Chest', 2, safe, exclude); a.forEach(e=>exclude.add(e.name));
-    const a2 = pickExercises('Triceps', 1, safe, exclude); a2.forEach(e=>exclude.add(e.name));
+    const a = pickExercises('Chest', 2, exclude); a.forEach(e=>exclude.add(e.name));
+    const a2 = pickExercises('Triceps', 1, exclude); a2.forEach(e=>exclude.add(e.name));
     days.push({ title: `DAY ${titleFor(0)}: CHEST & TRICEPS`, description: 'Push HIT', exerciseNames: [...a, ...a2].map(e=>e.name) });
-    const b = pickExercises('Lats/Back', 2, safe, exclude); b.forEach(e=>exclude.add(e.name));
-    const b2 = pickExercises('Biceps', 1, safe, exclude); b2.forEach(e=>exclude.add(e.name));
+    const b = pickExercises('Lats/Back', 2, exclude); b.forEach(e=>exclude.add(e.name));
+    const b2 = pickExercises('Biceps', 1, exclude); b2.forEach(e=>exclude.add(e.name));
     days.push({ title: `DAY ${titleFor(1)}: BACK & BICEPS`, description: 'Pull HIT', exerciseNames: [...b, ...b2].map(e=>e.name) });
-    const c = pickExercises('Legs', hatesLegs ? 2 : 3, safe, exclude); c.forEach(e=>exclude.add(e.name));
-    const c2 = pickExercises('Abs', 1, safe, exclude); c2.forEach(e=>exclude.add(e.name));
-    days.push({ title: `DAY ${titleFor(2)}: LEGS & ABS`, description: safe ? 'Ankle-safe' : 'Legs', exerciseNames: [...c, ...c2].map(e=>e.name) });
-    const sh = pickExercises('Shoulders', 2, safe, exclude); sh.forEach(e=>exclude.add(e.name));
+    const c = pickExercises('Legs', hatesLegs ? 2 : 3, exclude); c.forEach(e=>exclude.add(e.name));
+    const c2 = pickExercises('Abs', 1, exclude); c2.forEach(e=>exclude.add(e.name));
+    days.push({ title: `DAY ${titleFor(2)}: LEGS & ABS`, description: 'Legs', exerciseNames: [...c, ...c2].map(e=>e.name) });
+    const sh = pickExercises('Shoulders', 2, exclude); sh.forEach(e=>exclude.add(e.name));
     days.push({ title: `DAY ${titleFor(3)}: SHOULDERS & ARMS`, description: 'Delta pump', exerciseNames: sh.map(e=>e.name) });
   } else if (d <= 2) {
-    const allChest = pickExercises('Chest', 2, safe, exclude); allChest.forEach(e=>exclude.add(e.name));
-    const allBack = pickExercises('Lats/Back', 2, safe, exclude); allBack.forEach(e=>exclude.add(e.name));
-    const allLegs = pickExercises('Legs', hatesLegs ? 2 : 3, safe, exclude);
+    const allChest = pickExercises('Chest', 2, exclude); allChest.forEach(e=>exclude.add(e.name));
+    const allBack = pickExercises('Lats/Back', 2, exclude); allBack.forEach(e=>exclude.add(e.name));
+    const allLegs = pickExercises('Legs', hatesLegs ? 2 : 3, exclude);
     days.push({ title: `DAY ${titleFor(0)}: FULL BODY A`, description: 'Compound HIT', exerciseNames: [...allChest, ...allBack, ...allLegs].map(e=>e.name) });
-    const sh = pickExercises('Shoulders', 1, safe, exclude);
-    const arms = [...pickExercises('Biceps', 1, safe, exclude), ...pickExercises('Triceps', 1, safe, exclude)];
-    days.push({ title: `DAY ${titleFor(1)}: FULL BODY B`, description: 'Shoulders + arms + abs', exerciseNames: [...sh, ...arms, ...pickExercises('Abs', 1, safe, exclude)].map(e=>e.name) });
+    const sh = pickExercises('Shoulders', 1, exclude);
+    const arms = [...pickExercises('Biceps', 1, exclude), ...pickExercises('Triceps', 1, exclude)];
+    days.push({ title: `DAY ${titleFor(1)}: FULL BODY B`, description: 'Shoulders + arms + abs', exerciseNames: [...sh, ...arms, ...pickExercises('Abs', 1, exclude)].map(e=>e.name) });
   } else {
     // 5-6 day: PPL style
-    days.push({ title: `DAY ${titleFor(0)}: CHEST`, description: 'Chest HIT', exerciseNames: pickExercises('Chest', 3, safe, exclude).map(e=>e.name) });
-    days.push({ title: `DAY ${titleFor(1)}: BACK`, description: 'Back HIT', exerciseNames: pickExercises('Lats/Back', 3, safe, exclude).map(e=>e.name) });
-    days.push({ title: `DAY ${titleFor(2)}: LEGS${safe ? ' (ANKLE-SAFE)' : ''}`, description: safe ? 'No squats' : 'Legs', exerciseNames: [...pickExercises('Legs', 3, safe, exclude), ...pickExercises('Abs', 1, safe, exclude)].map(e=>e.name) });
-    days.push({ title: `DAY ${titleFor(3)}: SHOULDERS`, description: 'Delts', exerciseNames: pickExercises('Shoulders', 3, safe, exclude).map(e=>e.name) });
-    if (d >= 5) days.push({ title: `DAY ${titleFor(4)}: ARMS`, description: 'Bis + tris', exerciseNames: [...pickExercises('Biceps', 2, safe, exclude), ...pickExercises('Triceps', 2, safe, exclude)].map(e=>e.name) });
-    if (d >= 6) days.push({ title: `DAY ${titleFor(5)}: CHEST & BACK PUMP`, description: 'Weak point', exerciseNames: [...pickExercises('Chest', 1, safe, exclude), ...pickExercises('Lats/Back', 1, safe, exclude), ...pickExercises('Abs', 1, safe, exclude)].map(e=>e.name) });
+    days.push({ title: `DAY ${titleFor(0)}: CHEST`, description: 'Chest HIT', exerciseNames: pickExercises('Chest', 3, exclude).map(e=>e.name) });
+    days.push({ title: `DAY ${titleFor(1)}: BACK`, description: 'Back HIT', exerciseNames: pickExercises('Lats/Back', 3, exclude).map(e=>e.name) });
+    days.push({ title: `DAY ${titleFor(2)}: LEGS`, description: 'Legs', exerciseNames: [...pickExercises('Legs', 3, exclude), ...pickExercises('Abs', 1, exclude)].map(e=>e.name) });
+    days.push({ title: `DAY ${titleFor(3)}: SHOULDERS`, description: 'Delts', exerciseNames: pickExercises('Shoulders', 3, exclude).map(e=>e.name) });
+    if (d >= 5) days.push({ title: `DAY ${titleFor(4)}: ARMS`, description: 'Bis + tris', exerciseNames: [...pickExercises('Biceps', 2, exclude), ...pickExercises('Triceps', 2, exclude)].map(e=>e.name) });
+    if (d >= 6) days.push({ title: `DAY ${titleFor(5)}: CHEST & BACK PUMP`, description: 'Weak point', exerciseNames: [...pickExercises('Chest', 1, exclude), ...pickExercises('Lats/Back', 1, exclude), ...pickExercises('Abs', 1, exclude)].map(e=>e.name) });
   }
 
   const name = (nameOverride || `${goal.includes('strength') ? 'STRENGTH' : goal.includes('hypertrophy') || goal.includes('muscle') ? 'HYPERTROPHY' : 'RECOMP'} ${d}X HIT`).toUpperCase();
-  const desc = `${d}x/week HIT 3/1/4, 1 set failure + rest-pause/drop, <60min. ${safe ? 'Ankle-safe. ' : ''}${slots.loves ? `Loves ${slots.loves}. ` : ''}${slots.hates ? `Hates ${slots.hates}.` : ''}`.trim();
+  const desc = `${d}x/week HIT 3/1/4, 1 set failure + rest-pause/drop, <60min. ${slots.loves ? `Loves ${slots.loves}. ` : ''}${slots.hates ? `Hates ${slots.hates}.` : ''}`.trim();
   return { name, description: desc, days, weeks: 6 };
 }
 
@@ -96,10 +93,6 @@ function parseSlotsFromText(text: string, cur: Slots): { slots: Slots; answered:
   if (/\b(3|4|5|6)\s*x?\s*(day|per week|times)/.test(t) || /\b(3|4|5|6) days?\b/.test(t)) {
     const m = t.match(/\b(3|4|5|6)\b/); if (m) { next.days = parseInt(m[0], 10); answered.push('days'); }
   } else if (t.includes('2 day') || t.includes('twice')) { next.days = 2; answered.push('days'); }
-  if (t.includes('ankle') || t.includes('squat') || t.includes('knee')) {
-    if (t.includes('no') || t.includes('bad') || t.includes('limit') || t.includes('safe') || t.includes('cannot squat')) { next.ankleSafe = true; answered.push('ankle'); }
-    else if (t.includes('fine') || t.includes('good')) { next.ankleSafe = false; answered.push('ankle'); }
-  }
   if (t.includes('recomp')) { next.goal = 'recomp'; answered.push('goal'); }
   else if (t.includes('strength')) { next.goal = 'strength'; answered.push('goal'); }
   else if (t.includes('hypertrophy') || t.includes('muscle') || t.includes('size')) { next.goal = 'hypertrophy'; answered.push('goal'); }
@@ -117,7 +110,7 @@ export const FloatingAIChat: React.FC<{ storage: ReturnType<typeof useHitStorage
   const [open, setOpen] = useState(false);
   const [slots, setSlots] = useState<Slots>(DEFAULT_SLOTS);
   const [questionIdx, setQuestionIdx] = useState(0);
-  const [messages, setMessages] = useState<ChatMsg[]>([{ role: 'assistant', content: 'Yo — Heavy Duty AI Coach (FREE, no key needed). I build a brand NEW program for Builder — never touching HD RECOMP 6-WK.\n\nTell me what you want, or say "not sure" and I\'ll ask one at a time.\n\nTry: "Build me 4-day recomp, ankle safe, love chest, hate legs"' }]);
+  const [messages, setMessages] = useState<ChatMsg[]>([{ role: 'assistant', content: 'Yo — Heavy Duty AI Coach (FREE, no key needed). I build a brand NEW program for Builder — never touching HD RECOMP 6-WK.\n\nTell me what you want, or say "not sure" and I\'ll ask one at a time.\n\nTry: "Build me 4-day recomp, love chest, hate legs"' }]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const chatRef = useRef<HTMLDivElement>(null);
@@ -125,7 +118,6 @@ export const FloatingAIChat: React.FC<{ storage: ReturnType<typeof useHitStorage
   const questions = [
     'What\'s your goal? (recomp / strength / hypertrophy)',
     'How many days/week can you train? (2-6, default 3)',
-    'Any ankle/knee limits? Need ankle-safe (no conventional squats)? (yes/no)',
     'Experience? (beginner / intermediate / advanced)',
     'What do you LOVE training? (e.g. chest, back, arms)',
     'What do you HATE? (e.g. legs)',
@@ -140,7 +132,7 @@ export const FloatingAIChat: React.FC<{ storage: ReturnType<typeof useHitStorage
     } else {
       // all asked, build
       const prog = buildFreeProgram(s);
-      setMessages(p=>[...p, { role: 'assistant', content: `Got it — ${s.days}x/week ${s.goal || 'recomp'}${s.ankleSafe ? ', ankle-safe' : ''}. Built below.`, programJson: prog }]);
+      setMessages(p=>[...p, { role: 'assistant', content: `Got it — ${s.days}x/week ${s.goal || 'recomp'}. Built below.`, programJson: prog }]);
     }
   };
 
@@ -168,11 +160,10 @@ export const FloatingAIChat: React.FC<{ storage: ReturnType<typeof useHitStorage
 
       // if user gave explicit days/goal etc + wants build, build immediately if enough info
       if (wantsBuild) {
-        // if missing goal or ankle, fill defaults and build
+        // if missing goal, fill defaults and build
         const finalSlots: Slots = {
           goal: merged.goal || 'recomp',
           days: merged.days || 3,
-          ankleSafe: merged.ankleSafe ?? true,
           experience: merged.experience || 'Intermediate',
           loves: merged.loves || slots.loves,
           hates: merged.hates || slots.hates,
@@ -193,12 +184,8 @@ export const FloatingAIChat: React.FC<{ storage: ReturnType<typeof useHitStorage
         if (curQ === 1) {
           const m = t.match(/\b[2-6]\b/); if (m) updated.days = parseInt(m[0], 10);
         }
-        if (curQ === 2) {
-          if (low.includes('yes') || low.includes('true') || low.includes('safe')) updated.ankleSafe = true;
-          else if (low.includes('no') || low.includes('false')) updated.ankleSafe = false;
-        }
-        if (curQ === 4) updated.loves = t;
-        if (curQ === 5) updated.hates = t;
+        if (curQ === 3) updated.loves = t;
+        if (curQ === 4) updated.hates = t;
         setSlots(updated);
         if (questionIdx < questions.length) {
           askNext(updated, questionIdx);
@@ -214,7 +201,7 @@ export const FloatingAIChat: React.FC<{ storage: ReturnType<typeof useHitStorage
       if (low.includes('hello') || low.includes('hi')) {
         setMessages(p=>[...p, { role: 'assistant', content: 'Hey! Tell me goal + days, or say "not sure". I\'ll ask one by one then build.' }]);
       } else {
-        setMessages(p=>[...p, { role: 'assistant', content: 'Got you. Say "build me 3-day recomp ankle safe" or "not sure" to start questions. I generate FREE locally — no API, no cost.' }]);
+        setMessages(p=>[...p, { role: 'assistant', content: 'Got you. Say "build me 3-day recomp" or "not sure" to start questions. I generate FREE locally — no API, no cost.' }]);
       }
       setLoading(false);
     }, 450);
@@ -288,7 +275,7 @@ export const FloatingAIChat: React.FC<{ storage: ReturnType<typeof useHitStorage
           </div>
 
           <div className="p-2 border-t border-zinc-800 bg-zinc-950 flex items-center gap-2">
-            <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==='Enter'&&handleSend()} placeholder='Try: "build 4-day recomp ankle safe"...' className="flex-1 bg-zinc-900 border border-zinc-800 rounded-full px-4 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-fuchsia-700" />
+            <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==='Enter'&&handleSend()} placeholder='Try: "build 4-day recomp, love chest"...' className="flex-1 bg-zinc-900 border border-zinc-800 rounded-full px-4 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-fuchsia-700" />
             <button onClick={handleSend} disabled={loading||!input.trim()} className="p-2.5 bg-fuchsia-600 hover:bg-fuchsia-500 disabled:opacity-40 text-white rounded-full"><Send className="w-4 h-4"/></button>
           </div>
         </div>
