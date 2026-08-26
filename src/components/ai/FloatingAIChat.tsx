@@ -11,17 +11,17 @@ interface ParsedProgram { name: string; description: string; days: { title: stri
 type Slots = {
   goal: string;
   days: number;
+  style: '' | 'hit' | 'regular';
   experience: string;
   loves: string;
   hates: string;
 };
 
-const DEFAULT_SLOTS: Slots = { goal: '', days: 3, experience: 'Intermediate', loves: '', hates: '' };
+const DEFAULT_SLOTS: Slots = { goal: '', days: 3, style: '', experience: 'Intermediate', loves: '', hates: '' };
 
 function pickExercises(muscle: string, count: number, exclude: Set<string>): ExerciseDefinition[] {
   let pool = EXERCISE_LIBRARY.filter(e => e.muscleGroup === muscle);
   pool = pool.filter(e => !exclude.has(e.name));
-  // shuffle lightly stable
   const shuffled = [...pool].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, count);
 }
@@ -29,35 +29,35 @@ function pickExercises(muscle: string, count: number, exclude: Set<string>): Exe
 function buildFreeProgram(slots: Slots, nameOverride?: string): ParsedProgram {
   const d = slots.days;
   const goal = (slots.goal || 'recomp').toLowerCase();
+  const isHit = slots.style === 'hit' || slots.style === '';
+  const styleLabel = isHit ? 'HIT' : 'REGULAR';
+  const styleDesc = isHit ? 'HIT 3/1/4, 1 set to failure + rest-pause/drop, <60min' : 'REGULAR 3-4 sets x 8-12, 90s rest, RPE 8-9, progressive overload';
   const hatesLegs = slots.hates.toLowerCase().includes('leg') || goal.includes('upper');
   const lovesChest = slots.loves.toLowerCase().includes('chest');
   const exclude = new Set<string>();
   const days: ParsedProgram['days'] = [];
-
   const titleFor = (i: number) => String.fromCharCode(65 + i);
 
   if (d === 3) {
     const chestCount = lovesChest ? 3 : 2;
     const chestEx = pickExercises('Chest', chestCount, exclude); chestEx.forEach(e=>exclude.add(e.name));
     const backEx = pickExercises('Lats/Back', 2, exclude); backEx.forEach(e=>exclude.add(e.name));
-    days.push({ title: `DAY ${titleFor(0)}: CHEST & BACK`, description: 'Pre-exhaust + compounds HIT 3/1/4', exerciseNames: [...chestEx, ...backEx].map(e=>e.name) });
-
+    days.push({ title: `DAY ${titleFor(0)}: CHEST & BACK`, description: isHit ? 'Pre-exhaust + compounds HIT 3/1/4' : 'Push/Pull compounds 3x8-12', exerciseNames: [...chestEx, ...backEx].map(e=>e.name) });
     const legN = hatesLegs ? 3 : 4;
     const legEx = pickExercises('Legs', legN, exclude); legEx.forEach(e=>exclude.add(e.name));
     const absEx = pickExercises('Abs', 1, exclude); absEx.forEach(e=>exclude.add(e.name));
-    days.push({ title: `DAY ${titleFor(1)}: LEGS & ABS`, description: 'HIT legs', exerciseNames: [...legEx, ...absEx].map(e=>e.name) });
-
+    days.push({ title: `DAY ${titleFor(1)}: LEGS & ABS`, description: isHit ? 'HIT legs' : 'Legs + core 3x10-15', exerciseNames: [...legEx, ...absEx].map(e=>e.name) });
     const shEx = pickExercises('Shoulders', 2, exclude); shEx.forEach(e=>exclude.add(e.name));
     const biEx = pickExercises('Biceps', 1, exclude); biEx.forEach(e=>exclude.add(e.name));
     const triEx = pickExercises('Triceps', 1, exclude); triEx.forEach(e=>exclude.add(e.name));
-    days.push({ title: `DAY ${titleFor(2)}: SHOULDERS & ARMS`, description: 'Delts + arms to failure', exerciseNames: [...shEx, ...biEx, ...triEx].map(e=>e.name) });
+    days.push({ title: `DAY ${titleFor(2)}: SHOULDERS & ARMS`, description: isHit ? 'Delts + arms to failure' : 'Shoulders + arms volume', exerciseNames: [...shEx, ...biEx, ...triEx].map(e=>e.name) });
   } else if (d === 4) {
     const a = pickExercises('Chest', 2, exclude); a.forEach(e=>exclude.add(e.name));
     const a2 = pickExercises('Triceps', 1, exclude); a2.forEach(e=>exclude.add(e.name));
-    days.push({ title: `DAY ${titleFor(0)}: CHEST & TRICEPS`, description: 'Push HIT', exerciseNames: [...a, ...a2].map(e=>e.name) });
+    days.push({ title: `DAY ${titleFor(0)}: CHEST & TRICEPS`, description: isHit ? 'Push HIT' : 'Push 3x8-12', exerciseNames: [...a, ...a2].map(e=>e.name) });
     const b = pickExercises('Lats/Back', 2, exclude); b.forEach(e=>exclude.add(e.name));
     const b2 = pickExercises('Biceps', 1, exclude); b2.forEach(e=>exclude.add(e.name));
-    days.push({ title: `DAY ${titleFor(1)}: BACK & BICEPS`, description: 'Pull HIT', exerciseNames: [...b, ...b2].map(e=>e.name) });
+    days.push({ title: `DAY ${titleFor(1)}: BACK & BICEPS`, description: isHit ? 'Pull HIT' : 'Pull 3x8-12', exerciseNames: [...b, ...b2].map(e=>e.name) });
     const c = pickExercises('Legs', hatesLegs ? 2 : 3, exclude); c.forEach(e=>exclude.add(e.name));
     const c2 = pickExercises('Abs', 1, exclude); c2.forEach(e=>exclude.add(e.name));
     days.push({ title: `DAY ${titleFor(2)}: LEGS & ABS`, description: 'Legs', exerciseNames: [...c, ...c2].map(e=>e.name) });
@@ -67,22 +67,22 @@ function buildFreeProgram(slots: Slots, nameOverride?: string): ParsedProgram {
     const allChest = pickExercises('Chest', 2, exclude); allChest.forEach(e=>exclude.add(e.name));
     const allBack = pickExercises('Lats/Back', 2, exclude); allBack.forEach(e=>exclude.add(e.name));
     const allLegs = pickExercises('Legs', hatesLegs ? 2 : 3, exclude);
-    days.push({ title: `DAY ${titleFor(0)}: FULL BODY A`, description: 'Compound HIT', exerciseNames: [...allChest, ...allBack, ...allLegs].map(e=>e.name) });
+    days.push({ title: `DAY ${titleFor(0)}: FULL BODY A`, description: isHit ? 'Compound HIT' : 'Full body heavy', exerciseNames: [...allChest, ...allBack, ...allLegs].map(e=>e.name) });
     const sh = pickExercises('Shoulders', 1, exclude);
     const arms = [...pickExercises('Biceps', 1, exclude), ...pickExercises('Triceps', 1, exclude)];
     days.push({ title: `DAY ${titleFor(1)}: FULL BODY B`, description: 'Shoulders + arms + abs', exerciseNames: [...sh, ...arms, ...pickExercises('Abs', 1, exclude)].map(e=>e.name) });
   } else {
-    // 5-6 day: PPL style
-    days.push({ title: `DAY ${titleFor(0)}: CHEST`, description: 'Chest HIT', exerciseNames: pickExercises('Chest', 3, exclude).map(e=>e.name) });
-    days.push({ title: `DAY ${titleFor(1)}: BACK`, description: 'Back HIT', exerciseNames: pickExercises('Lats/Back', 3, exclude).map(e=>e.name) });
+    days.push({ title: `DAY ${titleFor(0)}: CHEST`, description: isHit ? 'Chest HIT' : 'Chest volume', exerciseNames: pickExercises('Chest', 3, exclude).map(e=>e.name) });
+    days.push({ title: `DAY ${titleFor(1)}: BACK`, description: isHit ? 'Back HIT' : 'Back volume', exerciseNames: pickExercises('Lats/Back', 3, exclude).map(e=>e.name) });
     days.push({ title: `DAY ${titleFor(2)}: LEGS`, description: 'Legs', exerciseNames: [...pickExercises('Legs', 3, exclude), ...pickExercises('Abs', 1, exclude)].map(e=>e.name) });
     days.push({ title: `DAY ${titleFor(3)}: SHOULDERS`, description: 'Delts', exerciseNames: pickExercises('Shoulders', 3, exclude).map(e=>e.name) });
     if (d >= 5) days.push({ title: `DAY ${titleFor(4)}: ARMS`, description: 'Bis + tris', exerciseNames: [...pickExercises('Biceps', 2, exclude), ...pickExercises('Triceps', 2, exclude)].map(e=>e.name) });
     if (d >= 6) days.push({ title: `DAY ${titleFor(5)}: CHEST & BACK PUMP`, description: 'Weak point', exerciseNames: [...pickExercises('Chest', 1, exclude), ...pickExercises('Lats/Back', 1, exclude), ...pickExercises('Abs', 1, exclude)].map(e=>e.name) });
   }
 
-  const name = (nameOverride || `${goal.includes('strength') ? 'STRENGTH' : goal.includes('hypertrophy') || goal.includes('muscle') ? 'HYPERTROPHY' : 'RECOMP'} ${d}X HIT`).toUpperCase();
-  const desc = `${d}x/week HIT 3/1/4, 1 set failure + rest-pause/drop, <60min. ${slots.loves ? `Loves ${slots.loves}. ` : ''}${slots.hates ? `Hates ${slots.hates}.` : ''}`.trim();
+  const base = goal.includes('strength') ? 'STRENGTH' : goal.includes('hypertrophy') || goal.includes('muscle') ? 'HYPERTROPHY' : 'RECOMP';
+  const name = (nameOverride || `${base} ${d}X ${styleLabel}`).toUpperCase();
+  const desc = `${d}x/week ${styleDesc}. ${slots.loves ? `Loves ${slots.loves}. ` : ''}${slots.hates ? `Hates ${slots.hates}.` : ''}`.trim();
   return { name, description: desc, days, weeks: 6 };
 }
 
@@ -97,6 +97,8 @@ function parseSlotsFromText(text: string, cur: Slots): { slots: Slots; answered:
   else if (t.includes('strength')) { next.goal = 'strength'; answered.push('goal'); }
   else if (t.includes('hypertrophy') || t.includes('muscle') || t.includes('size')) { next.goal = 'hypertrophy'; answered.push('goal'); }
   else if (t.includes('fat loss') || t.includes('cut')) { next.goal = 'recomp'; answered.push('goal'); }
+  if (t.includes('hit') || t.includes('heavy duty') || t.includes('failure') || t.includes('mentzer') || t.includes('yates')) { next.style = 'hit'; answered.push('style'); }
+  else if (t.includes('regular') || t.includes('normal') || t.includes('classic') || t.includes('volume') || t.includes('traditional') || t.includes('3x') || t.includes('4x')) { next.style = 'regular'; answered.push('style'); }
   if (t.includes('beginner')) { next.experience = 'Beginner'; answered.push('exp'); }
   else if (t.includes('advanced')) { next.experience = 'Advanced'; answered.push('exp'); }
   else if (t.includes('intermediate')) { next.experience = 'Intermediate'; answered.push('exp'); }
@@ -110,12 +112,13 @@ export const FloatingAIChat: React.FC<{ storage: ReturnType<typeof useHitStorage
   const [open, setOpen] = useState(false);
   const [slots, setSlots] = useState<Slots>(DEFAULT_SLOTS);
   const [questionIdx, setQuestionIdx] = useState(0);
-  const [messages, setMessages] = useState<ChatMsg[]>([{ role: 'assistant', content: 'Yo — Heavy Duty AI Coach (FREE, no key needed). I build a brand NEW program for Builder — never touching HD RECOMP 6-WK.\n\nTell me what you want, or say "not sure" and I\'ll ask one at a time.\n\nTry: "Build me 4-day recomp, love chest, hate legs"' }]);
+  const [messages, setMessages] = useState<ChatMsg[]>([{ role: 'assistant', content: 'Yo — Heavy Duty AI Coach (FREE, no key needed). I build a brand NEW program for Builder — never touching HD RECOMP 6-WK.\n\nI cover HIT (1 set to failure, 3/1/4) AND Regular (3-4 sets volume). Tell me what you want, or say "not sure" and I\'ll ask one at a time.\n\nTry: "Build me 4-day HIT recomp, love chest" or "Build me regular 5-day hypertrophy"' }]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const chatRef = useRef<HTMLDivElement>(null);
 
   const questions = [
+    'HIT style or Regular? (HIT = 1 set to failure, 3/1/4 tempo · Regular = 3-4 sets x 8-12, classic volume)',
     'What\'s your goal? (recomp / strength / hypertrophy)',
     'How many days/week can you train? (2-6, default 3)',
     'Experience? (beginner / intermediate / advanced)',
@@ -130,9 +133,8 @@ export const FloatingAIChat: React.FC<{ storage: ReturnType<typeof useHitStorage
       setMessages(p=>[...p, { role: 'assistant', content: questions[idx] }]);
       setQuestionIdx(idx+1);
     } else {
-      // all asked, build
       const prog = buildFreeProgram(s);
-      setMessages(p=>[...p, { role: 'assistant', content: `Got it — ${s.days}x/week ${s.goal || 'recomp'}. Built below.`, programJson: prog }]);
+      setMessages(p=>[...p, { role: 'assistant', content: `Got it — ${s.days}x/week ${s.goal || 'recomp'} ${s.style.toUpperCase() || 'HIT'}. Built below.`, programJson: prog }]);
     }
   };
 
@@ -154,54 +156,76 @@ export const FloatingAIChat: React.FC<{ storage: ReturnType<typeof useHitStorage
         return;
       }
 
-      // try parse slots
       const { slots: parsed } = parseSlotsFromText(t, slots);
       const merged = { ...slots, ...parsed };
 
-      // if user gave explicit days/goal etc + wants build, build immediately if enough info
       if (wantsBuild) {
-        // if missing goal, fill defaults and build
         const finalSlots: Slots = {
           goal: merged.goal || 'recomp',
           days: merged.days || 3,
+          style: (merged.style as Slots['style']) || (low.includes('regular') ? 'regular' : 'hit'),
           experience: merged.experience || 'Intermediate',
           loves: merged.loves || slots.loves,
           hates: merged.hates || slots.hates,
         };
+        // if still no style and user didn't state, ask style explicitly
+        if (!parsed.style && !low.includes('hit') && !low.includes('regular') && !low.includes('heavy duty')) {
+          setSlots(finalSlots);
+          setMessages(p=>[...p, { role: 'assistant', content: 'Quick one — HIT or Regular? (reply "HIT" for 1 set failure 3/1/4, or "Regular" for 3-4 sets volume)' }]);
+          setQuestionIdx(1); // next answers will fill
+          // store pending build slots for after style answer
+          (window as any).__pendingSlots = finalSlots;
+          setLoading(false);
+          return;
+        }
         setSlots(finalSlots);
         const prog = buildFreeProgram(finalSlots, t.slice(0, 30));
-        setMessages(p=>[...p, { role: 'assistant', content: `Building ${finalSlots.days}x ${finalSlots.goal} HIT...`, programJson: prog }]);
+        setMessages(p=>[...p, { role: 'assistant', content: `Building ${finalSlots.days}x ${finalSlots.goal} ${finalSlots.style.toUpperCase()}...`, programJson: prog }]);
         setLoading(false);
         return;
       }
 
-      // otherwise treat as answer to current question flow if in progress
       if (questionIdx > 0 && questionIdx <= questions.length) {
-        // map answer to slot
         const curQ = questionIdx - 1;
-        const updated = { ...merged };
-        if (curQ === 0 && !updated.goal) updated.goal = t.slice(0, 30);
-        if (curQ === 1) {
+        const updated = { ...merged } as Slots;
+        // handle HIT/Regular question
+        if (curQ === 0) {
+          if (low.includes('hit') || low.includes('heavy')) updated.style = 'hit';
+          else if (low.includes('regular') || low.includes('normal') || low.includes('classic') || low.includes('volume')) updated.style = 'regular';
+          else if (!updated.style) updated.style = 'hit';
+          // if we had pending build, merge and build now
+          const pending = (window as any).__pendingSlots as Slots | undefined;
+          if (pending) {
+            const final = { ...pending, style: updated.style };
+            delete (window as any).__pendingSlots;
+            setSlots(final);
+            const prog = buildFreeProgram(final);
+            setMessages(p=>[...p, { role: 'assistant', content: `Perfect — building ${final.days}x ${final.goal} ${final.style.toUpperCase()}...`, programJson: prog }]);
+            setLoading(false);
+            return;
+          }
+        }
+        if (curQ === 1 && !updated.goal) updated.goal = t.slice(0, 30);
+        if (curQ === 2) {
           const m = t.match(/\b[2-6]\b/); if (m) updated.days = parseInt(m[0], 10);
         }
-        if (curQ === 3) updated.loves = t;
-        if (curQ === 4) updated.hates = t;
+        if (curQ === 4) updated.loves = t;
+        if (curQ === 5) updated.hates = t;
         setSlots(updated);
         if (questionIdx < questions.length) {
           askNext(updated, questionIdx);
         } else {
           const prog = buildFreeProgram(updated);
-          setMessages(p=>[...p, { role: 'assistant', content: `Perfect — built ${updated.days}x ${updated.goal || 'recomp'}.`, programJson: prog }]);
+          setMessages(p=>[...p, { role: 'assistant', content: `Perfect — built ${updated.days}x ${updated.goal || 'recomp'} ${updated.style.toUpperCase()}.`, programJson: prog }]);
         }
         setLoading(false);
         return;
       }
 
-      // free chat fallback
       if (low.includes('hello') || low.includes('hi')) {
-        setMessages(p=>[...p, { role: 'assistant', content: 'Hey! Tell me goal + days, or say "not sure". I\'ll ask one by one then build.' }]);
+        setMessages(p=>[...p, { role: 'assistant', content: 'Hey! Tell me goal + days + style (HIT or Regular), or say "not sure". I\'ll ask one by one then build.' }]);
       } else {
-        setMessages(p=>[...p, { role: 'assistant', content: 'Got you. Say "build me 3-day recomp" or "not sure" to start questions. I generate FREE locally — no API, no cost.' }]);
+        setMessages(p=>[...p, { role: 'assistant', content: 'Got you. Say "build me 3-day HIT recomp" or "build regular 4-day" or "not sure" to start questions. I generate FREE locally — no API, no cost.' }]);
       }
       setLoading(false);
     }, 450);
@@ -219,7 +243,9 @@ export const FloatingAIChat: React.FC<{ storage: ReturnType<typeof useHitStorage
     });
     const weeks = DEFAULT_WEEK_PHASES.slice(0, p.weeks||6);
     const name = (p.name||`AI PROGRAM ${new Date().toLocaleDateString()}`).toUpperCase();
-    const newId = createProgram(name, p.description||'AI Coach HIT 3/1/4 FREE', undefined);
+    const isHit = p.description.includes('HIT 3/1/4');
+    const fallbackDesc = isHit ? 'AI HIT 3/1/4 FREE' : 'AI REGULAR 3x8-12 FREE';
+    const newId = createProgram(name, p.description||fallbackDesc, undefined);
     const raw = localStorage.getItem('hit_programs_v4');
     if(raw){
       try{
@@ -243,11 +269,11 @@ export const FloatingAIChat: React.FC<{ storage: ReturnType<typeof useHitStorage
               <div className="w-7 h-7 rounded-full bg-fuchsia-600 flex items-center justify-center"><Bot className="w-4 h-4 text-white"/></div>
               <div>
                 <div className="font-bebas text-sm text-fuchsia-300 tracking-wider flex items-center gap-1">AI COACH <span className="bg-emerald-600 text-white text-[9px] px-1.5 py-0.5 rounded font-mono-code flex items-center gap-0.5"><Zap className="w-3 h-3"/> FREE</span></div>
-                <div className="text-[10px] font-mono-code text-zinc-400">Builds NEW program → Builder · no key · no cost</div>
+                <div className="text-[10px] font-mono-code text-zinc-400">HIT or Regular → NEW program → Builder</div>
               </div>
             </div>
             <div className="flex items-center gap-1">
-              <button onClick={()=>{ setMessages([{ role:'assistant', content:'Cleared. Say "not sure" to start interview or "build me 3-day ..."'}]); setSlots(DEFAULT_SLOTS); setQuestionIdx(0); }} className="p-1.5 bg-zinc-900 rounded-full text-zinc-500 hover:text-zinc-300" title="Clear"><Trash2 className="w-4 h-4"/></button>
+              <button onClick={()=>{ setMessages([{ role:'assistant', content:'Cleared. Say "not sure" or "build me 3-day HIT..."'}]); setSlots(DEFAULT_SLOTS); setQuestionIdx(0); }} className="p-1.5 bg-zinc-900 rounded-full text-zinc-500 hover:text-zinc-300" title="Clear"><Trash2 className="w-4 h-4"/></button>
               <button onClick={()=>setOpen(false)} className="p-1.5 bg-zinc-900 rounded-full text-zinc-400"><X className="w-4 h-4"/></button>
             </div>
           </div>
@@ -275,12 +301,12 @@ export const FloatingAIChat: React.FC<{ storage: ReturnType<typeof useHitStorage
           </div>
 
           <div className="p-2 border-t border-zinc-800 bg-zinc-950 flex items-center gap-2">
-            <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==='Enter'&&handleSend()} placeholder='Try: "build 4-day recomp, love chest"...' className="flex-1 bg-zinc-900 border border-zinc-800 rounded-full px-4 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-fuchsia-700" />
+            <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==='Enter'&&handleSend()} placeholder='Try: "build HIT 4-day" or "regular 5-day"...' className="flex-1 bg-zinc-900 border border-zinc-800 rounded-full px-4 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-fuchsia-700" />
             <button onClick={handleSend} disabled={loading||!input.trim()} className="p-2.5 bg-fuchsia-600 hover:bg-fuchsia-500 disabled:opacity-40 text-white rounded-full"><Send className="w-4 h-4"/></button>
           </div>
         </div>
       )}
-      {!open && <div className="fixed bottom-20 right-[76px] z-40 hidden sm:flex items-center gap-1 bg-zinc-900 border border-zinc-800 text-zinc-400 text-xs font-mono-code px-2.5 py-1 rounded-full shadow"><MessageCircle className="w-3.5 h-3.5 text-fuchsia-400"/> AI Coach · FREE</div>}
+      {!open && <div className="fixed bottom-20 right-[76px] z-40 hidden sm:flex items-center gap-1 bg-zinc-900 border border-zinc-800 text-zinc-400 text-xs font-mono-code px-2.5 py-1 rounded-full shadow"><MessageCircle className="w-3.5 h-3.5 text-fuchsia-400"/> AI Coach · HIT or Regular</div>}
     </>
   );
 };
